@@ -17,7 +17,7 @@ We are going to try to make a 3D physics engine in 🦀 rust 🦀. Inspiration d
     * Create baseline to show images
     * Render frames continously 
     * Simulate camera movement
-* Vector-math (use library?)
+* Vector-math using ultra-violet (https://github.com/termhn/ultraviolet)
 * Define & render 3D objects
     * Cubics
     * Circles
