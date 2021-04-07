@@ -1,6 +1,6 @@
 # Specification
 
-* This is an attempt at a 3D physics engine found at https://github.com/INDAPlus20/isaklar-ahanifi-maltebl-project 
+* This is an attempt at a 3D physics engine found at https://github.com/INDAPlus20/isaklar-ahanifi-maltebl-lervik-project
 * Issues should be as short as possible, yet informative. 
 * Branches shall be named akin to `bug/13_ground-friction` meaning: `<branch-type>/<issue#>_<shortened-issue-description>`
 * Commits should be named according to the whims of the author.
