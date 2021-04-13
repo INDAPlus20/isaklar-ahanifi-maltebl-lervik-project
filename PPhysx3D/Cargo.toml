@@ -1,5 +1,5 @@
 [package]
-name = "PPhysx3D"
+name = "pphysx3d"
 version = "0.1.0"
 authors = ["arian <counterstrike1337@hotmail.com>"]
 edition = "2018"
