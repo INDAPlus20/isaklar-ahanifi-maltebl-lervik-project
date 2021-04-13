@@ -7,14 +7,24 @@ pub trait BoundingVolume {
     fn contains(&self, other: &Self) -> bool;
 }
 
+
 pub struct AABB {
-    mins: Point3<f32>,
+    mins: Point3<f32>, //two points is all it takes to represent a box
     maxs: Point3<f32>,
 }
 
 impl AABB {
     pub fn new(mins: Point3<f32>, maxs: Point3<f32>) -> AABB {
         AABB { mins, maxs }
+    }
+}
+
+impl BoundingVolume for AABB{
+    fn contains(&self, other: &Self) -> bool {
+        na::partial_le(&self.mins,&other.mins) && na::partial_ge(&self.maxs, &other.maxs)
+    }
+    fn interects(&self, other: &Self) -> bool {
+        na::partial_le(&self.mins, &other.maxs) && na::partial_ge(&self.maxs, &other.mins)
     }
 }
 
