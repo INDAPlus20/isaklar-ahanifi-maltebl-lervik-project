@@ -5,7 +5,7 @@ mod collision;
 mod force;
 mod renderer;
 mod scene;
-mod shape;
+mod shapes;
 
 fn main() {
     let mut window = kiss3d::window::Window::new_with_size("kiss3d: cube", 600, 300);
