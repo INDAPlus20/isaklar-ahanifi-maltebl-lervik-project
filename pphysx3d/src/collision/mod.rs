@@ -1,4 +1,6 @@
-use crate::shapes::{bounding_volume::BoundingVolume, shape::Shape};
+use kiss3d::nalgebra::distance_squared;
+
+use crate::shapes::{bounding_volume::BoundingVolume, shape::Shape, sphere::Sphere};
 
 mod tests;
 
@@ -20,7 +22,21 @@ pub fn broad_phase<T: Shape>(objects: &Vec<Box<T>>) -> Vec<(&Box<T>, &Box<T>)> {
     return collisions;
 }
 
-// Checks collision pairs if they actually collide
-pub fn narrow_phase<T: Shape>(pairs: Vec<(&Box<T>, &Box<T>)>) {
+/// Checks collision pairs if they actually collide
+pub fn narrow_phase<T: Shape>(pairs: &mut Vec<(&Box<T>, &Box<T>)>) {
+
+}
+
+/// Collision check for two spheres
+pub fn sphere_sphere(s_1: &Sphere, s_2: &Sphere) -> bool {
+    // Check if sum of radiuses >= distance
+    let squared_distance = distance_squared(&s_1.center, &s_2.center);
+
+    let radiuses = s_1.radius + s_2.radius;
     
+    if squared_distance <= radiuses * radiuses {
+        return true;
+    } else {
+        return false;
+}
 }
