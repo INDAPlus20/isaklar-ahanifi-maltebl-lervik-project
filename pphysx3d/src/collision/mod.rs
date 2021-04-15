@@ -1,9 +1,8 @@
-use kiss3d::nalgebra::distance_squared;
+use kiss3d::nalgebra::{distance_squared, Point3, Vector3};
 
-use crate::shapes::{bounding_volume::BoundingVolume, shape::Shape, sphere::Sphere};
+use crate::shapes::{bounding_volume::BoundingVolume, shape::Shape, sphere::Sphere, GameObject};
 
 mod tests;
-
 
 /// The broad phase, where we check for possible collisions using AABB. Returns collision pairs
 pub fn broad_phase<T: Shape>(objects: &Vec<Box<T>>) -> Vec<(&Box<T>, &Box<T>)> {
@@ -23,9 +22,7 @@ pub fn broad_phase<T: Shape>(objects: &Vec<Box<T>>) -> Vec<(&Box<T>, &Box<T>)> {
 }
 
 /// Checks collision pairs if they actually collide
-pub fn narrow_phase<T: Shape>(pairs: &mut Vec<(&Box<T>, &Box<T>)>) {
-
-}
+pub fn narrow_phase<T: Shape>(pairs: &mut Vec<(&Box<T>, &Box<T>)>) {}
 
 /// Collision check for two spheres
 pub fn sphere_sphere(s_1: &Sphere, s_2: &Sphere) -> bool {
@@ -33,10 +30,21 @@ pub fn sphere_sphere(s_1: &Sphere, s_2: &Sphere) -> bool {
     let squared_distance = distance_squared(&s_1.center, &s_2.center);
 
     let radiuses = s_1.radius + s_2.radius;
-    
+
     if squared_distance <= radiuses * radiuses {
         return true;
     } else {
         return false;
+    }
 }
+
+/// Contains the necessary information to resolve a coliision
+pub struct CollisionManifold {
+    colliding: bool,
+    normal: Vector3<f32>,
+    depth: f32,
+    contacts: Vec<Point3<f32>>,
 }
+
+/// Calculates the collision manifold for two colliding objects
+pub fn calculate_collision_manifold(obj_a: &GameObject, obj_b: &GameObject) {}
