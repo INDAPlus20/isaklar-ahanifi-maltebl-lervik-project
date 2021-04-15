@@ -11,7 +11,7 @@ pub fn broad_phase<T: Shape>(objects: &Vec<Box<T>>) -> Vec<(&Box<T>, &Box<T>)> {
     let mut collisions: Vec<(&Box<T>, &Box<T>)> = Vec::with_capacity(objects.len() * objects.len());
     for current_i in 0..objects.len() {
         let current = &objects[current_i];
-        for test_i in 0..objects.len() {
+        for test_i in current_i..objects.len() {
             let test = &objects[test_i];
             if current_i != test_i && current.compute_aabb().interects(&test.compute_aabb()) {
                 collisions.push((current, test));

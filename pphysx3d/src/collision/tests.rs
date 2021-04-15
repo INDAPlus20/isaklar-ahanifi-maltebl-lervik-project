@@ -10,7 +10,7 @@ fn broad_phase_collision() {
     let objects = vec![sphere_1, sphere_2];
     let collisions = broad_phase(&objects);
     //println!("{:?}", collisions.len());
-    assert_eq!(collisions.len(), 2)
+    assert_eq!(collisions.len(), 1)
     //print!("{:?} \n {:?}\n", objects[0].compute_aabb(), objects[1].compute_aabb())
 }
 
