@@ -1,7 +1,6 @@
-use kiss3d::nalgebra::{Point, Point3};
-use crate::shapes::sphere::Sphere;
 use super::*;
-
+use crate::shapes::sphere::Sphere;
+use kiss3d::nalgebra::{Point, Point3};
 
 #[test]
 fn broad_phase_collision() {
