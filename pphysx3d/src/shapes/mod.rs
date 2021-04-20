@@ -3,6 +3,7 @@ use na::Vector3;
 
 use self::{shape::Shape, sphere::Sphere};
 mod bounding_volume;
+mod cube;
 mod shape;
 mod sphere;
 mod tests;
