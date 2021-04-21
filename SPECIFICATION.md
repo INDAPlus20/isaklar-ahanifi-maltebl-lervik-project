@@ -13,7 +13,7 @@ We are going to try to make a 3D physics engine in 🦀 rust 🦀. Inspiration d
 
 ### Outline
 
-* Rendering (As a start using [Kiss3D](https://github.com/sebcrozet/kiss3d)
+* Rendering (As a start using [Kiss3D](https://github.com/sebcrozet/kiss3d))
     * Create baseline to show images
     * Render frames continously 
     * Simulate camera movement
