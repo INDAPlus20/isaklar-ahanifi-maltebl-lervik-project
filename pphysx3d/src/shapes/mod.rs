@@ -2,9 +2,9 @@ use kiss3d::nalgebra::{self as na, Isometry3, Point3, Vector2};
 use na::Vector3;
 
 use self::{shape::Shape, sphere::Sphere};
-mod bounding_volume;
-mod shape;
-mod sphere;
+pub mod bounding_volume;
+pub mod shape;
+pub mod sphere;
 mod tests;
 mod utils;
 struct Particle {
@@ -17,10 +17,10 @@ struct Ray {
     direction: Vector3<f32>,
 }
 
-struct GameObject {
-    shape: Box<dyn Shape>,    // The collider
-    position: Isometry3<f32>, // includes a translation vector and a rotation part as an unit quaternion
-    velocity: Vector3<f32>,
+pub struct GameObject {
+    pub shape: Box<dyn Shape>,    // The collider
+    pub position: Isometry3<f32>, // includes a translation vector and a rotation part as an unit quaternion
+    pub velocity: Vector3<f32>,
     //texture:
-    mass: f32,
+    pub mass: f32,
 }
