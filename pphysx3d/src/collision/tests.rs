@@ -1,6 +1,6 @@
 use super::*;
 use crate::shapes::sphere::Sphere;
-use kiss3d::nalgebra::{Point, Point3};
+use kiss3d::nalgebra::{Point, Point3, Rotation3, Translation3, UnitQuaternion};
 
 #[test]
 fn broad_phase_collision() {
