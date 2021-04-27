@@ -9,15 +9,15 @@
 
 ## Project
 
-We are going to try to make a 3D physics engine in 🦀 rust 🦀. Inspiration drawn from, among many things: https://nphysics.org/ & https://www.ncollide.org/ and it's examples. A finished product with all features is not expected but above all goals stated in `Enjoyment` are sought. 
+We are going to try to make a 3D physics engine in 🦀 rust 🦀. Inspiration drawn from, among many things: [nphysics](https://nphysics.org/) & [ncollide](https://www.ncollide.org/) and it's examples. A finished product with all features is not expected but above all goals stated in `Enjoyment` are sought. 
 
 ### Outline
 
-* Rendering (use library?)
+* Rendering (As a start using [Kiss3D](https://github.com/sebcrozet/kiss3d))
     * Create baseline to show images
     * Render frames continously 
     * Simulate camera movement
-* Vector-math using ultra-violet (https://github.com/termhn/ultraviolet)
+* Vector-math using [nalgebra](https://github.com/dimforge/nalgebra)
 * Define & render 3D objects
     * Cubics
     * Circles
@@ -59,3 +59,11 @@ We are going to try to make a 3D physics engine in 🦀 rust 🦀. Inspiration d
 
 ### Enjoyment
 * Make lil'object go wooosh
+
+### Risks
+* Laggy af
+* It will take a while to get a basic scene
+* Might not work correctly (collisions are hard)
+* Project will branch very quickly once different types of geometric shapes are added.
+* Very research-heavy with lots of rabbit-holes
+* The implementation of the rendering is not very obvious.

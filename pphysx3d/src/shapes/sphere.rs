@@ -1,29 +1,36 @@
 use core::f32;
 
 use crate::shapes::bounding_volume::AABB;
-use kiss3d::nalgebra::{self as na, Point3, Vector3};
+use kiss3d::nalgebra::{self as na, Isometry3, Point3, Vector3};
 
-use super::bounding_volume::BoundingSphere;
+use super::{bounding_volume::BoundingSphere, shape::Shape};
 
 pub struct Sphere {
-    pub center: Point3<f32>,
     pub radius: f32,
 }
 
 impl Sphere {
-    pub fn new(radius:f32,center:Point3<f32>)-> Sphere {
-        Sphere{
-            center,
-            radius,
-        }
+    pub fn new(radius: f32) -> Sphere {
+        Sphere { radius }
     }
-    pub fn aabb(&self) -> AABB {
+    pub fn aabb(&self, pos: &Isometry3<f32>) -> AABB {
+        let center = Point3::from(pos.translation.vector);
         AABB::new(
-            (self.center + Vector3::repeat(-self.radius)).into(),
-            (self.center + Vector3::repeat(self.radius)).into(),
+            center + Vector3::repeat(-self.radius), //
+            center + Vector3::repeat(self.radius),
         )
     }
-    pub fn bounding_sphere(&self) -> BoundingSphere{
-        BoundingSphere::new(self.radius, self.center.into())
+    pub fn bounding_sphere(&self, pos: &Isometry3<f32>) -> BoundingSphere {
+        let center = Point3::from(pos.translation.vector);
+        BoundingSphere::new(self.radius, center)
+    }
+}
+
+impl Shape for Sphere {
+    fn compute_aabb(&self, pos: &Isometry3<f32>) -> AABB {
+        self.aabb(&pos)
+    }
+    fn compute_bounding_sphere(&self, pos: &Isometry3<f32>) -> BoundingSphere {
+        self.bounding_sphere(pos)
     }
 }
