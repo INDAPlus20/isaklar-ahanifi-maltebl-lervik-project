@@ -46,14 +46,51 @@ pub fn sphere_sphere(
         return false;
     }
 }
-
+#[derive(Debug, PartialEq)]
 /// Contains the necessary information to resolve a coliision
 pub struct CollisionManifold {
     colliding: bool,
-    normal: Vector3<f32>,
+    normal: Unit<Vector3<f32>>,
     depth: f32,
     contacts: Vec<Point3<f32>>,
 }
 
-/// Calculates the collision manifold for two colliding objects
-pub fn calculate_collision_manifold(obj_a: &GameObject, obj_b: &GameObject) {}
+impl CollisionManifold {
+    pub fn new() -> CollisionManifold {
+        CollisionManifold {
+            colliding: false,
+            normal: UnitVector3::new_normalize(Vector3::new(0.0, 0.0, 1.0)),
+            depth: f32::MAX,
+            contacts: Vec::with_capacity(10),
+        }
+    }
+
+    /// Calculates the collision manifold between two spheres, assumes they conatin transform
+    pub fn sphere_sphere(
+        sphere_a: &Sphere,
+        sphere_b: &Sphere,
+        iso_a: &Isometry3<f32>,
+        iso_b: &Isometry3<f32>,
+    ) -> CollisionManifold {
+        let mut manifold = CollisionManifold::new();
+
+        let distance: Vector3<f32> = iso_b.translation.vector - iso_a.translation.vector;
+        let squared_distance: f32 = distance.norm_squared();
+        let radiuses = sphere_a.radius + sphere_b.radius;
+
+        // check if colliding
+        if squared_distance > radiuses * radiuses {
+            return manifold;
+        }
+
+        manifold.colliding = true;
+        manifold.normal = UnitVector3::new_normalize(distance);
+        manifold.depth = ((distance.norm() - radiuses) / 2.0f32).abs();
+        let point_dist = sphere_a.radius - manifold.depth; // distance to contact point
+        let contact_point: Point3<f32> =
+            (iso_a.translation.vector + manifold.normal.scale(point_dist)).into();
+        manifold.contacts.push(contact_point);
+        
+        return manifold;
+    }
+}
