@@ -71,7 +71,7 @@ impl CollisionManifold {
         }
     }
 
-    /// Calculates the collision manifold between two spheres, assumes they conatin transform
+    /// Calculates the collision manifold between two spheres
     pub fn sphere_sphere(
         sphere_a: &Sphere,
         sphere_b: &Sphere,
@@ -96,7 +96,7 @@ impl CollisionManifold {
         let contact_point: Point3<f32> =
             (iso_a.translation.vector + manifold.normal.scale(point_dist)).into();
         manifold.contacts.push(contact_point);
-        
+
         return manifold;
     }
 }
