@@ -4,9 +4,23 @@ use kiss3d::nalgebra::{Point, Point3, Rotation3, Translation3, UnitQuaternion};
 
 #[test]
 fn broad_phase_collision() {
-    let sphere_1 = Box::new(Sphere::new(1.0f32, Point3::new(0f32, 0f32, 0f32)));
-    let sphere_2 = Box::new(Sphere::new(1.0f32, Point3::new(1.99f32, 1.99f32, 0f32)));
-    let objects = vec![sphere_1, sphere_2];
+    let sphere_1 = Box::new(Sphere::new(1.0f32));
+    let transform_1 = Isometry3::translation(0f32, 0f32, 0f32);
+    let sphere_2 = Box::new(Sphere::new(1.0f32));
+    let transform_2 = Isometry3::translation(1.99f32, 1.99f32, 0f32);
+    let object_1 = GameObject {
+        shape: sphere_1,
+        position: transform_1,
+        velocity: Vector3::new(0f32, 0f32, 0f32),
+        mass: 0f32,
+    };
+    let object_2 = GameObject {
+        shape: sphere_2,
+        position: transform_2,
+        velocity: Vector3::new(0f32, 0f32, 0f32),
+        mass: 0f32,
+    };
+    let objects = vec![object_1, object_2];
     let collisions = broad_phase(&objects);
     //println!("{:?}", collisions.len());
     assert_eq!(collisions.len(), 1)
@@ -15,8 +29,8 @@ fn broad_phase_collision() {
 
 #[test]
 fn sphere_sphere_collision_check() {
-    let sphere_1 = Sphere::new(2.0f32, Point3::new(0f32, 0f32, 0f32));
-    let sphere_2 = Sphere::new(2.0f32, Point3::new(0f32, 2f32, 3f32));
+    let sphere_1 = Sphere::new(2.0f32);
+    let sphere_2 = Sphere::new(2.0f32);
     let iso_1 = Isometry3::from_parts(
         Translation3::new(0f32, 0f32, 0f32),
         UnitQuaternion::new(Vector3::y() * std::f32::consts::FRAC_PI_2),
@@ -31,8 +45,8 @@ fn sphere_sphere_collision_check() {
 
 #[test]
 fn sphere_manifold() {
-    let sphere_1 = Sphere::new(2.0f32, Point3::new(0f32, 0f32, 0f32));
-    let sphere_2 = Sphere::new(2.0f32, Point3::new(0f32, 0f32, 0f32));
+    let sphere_1 = Sphere::new(2.0f32);
+    let sphere_2 = Sphere::new(2.0f32);
     let iso_1 = Isometry3::from_parts(
         Translation3::new(0f32, 0f32, 0f32),
         UnitQuaternion::new(Vector3::y() * std::f32::consts::FRAC_PI_2),
