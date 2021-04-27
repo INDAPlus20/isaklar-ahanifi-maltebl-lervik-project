@@ -1,4 +1,8 @@
-use kiss3d::nalgebra::{distance_squared, Point3, Vector3};
+use std::any::Any;
+
+use kiss3d::nalgebra::{
+    abs, distance_squared, Isometry3, Point3, RealField, Unit, UnitVector3, Vector3,
+};
 
 use crate::shapes::{bounding_volume::BoundingVolume, shape::Shape, sphere::Sphere, GameObject};
 
@@ -25,11 +29,16 @@ pub fn broad_phase<T: Shape>(objects: &Vec<Box<T>>) -> Vec<(&Box<T>, &Box<T>)> {
 pub fn narrow_phase<T: Shape>(pairs: &mut Vec<(&Box<T>, &Box<T>)>) {}
 
 /// Collision check for two spheres
-pub fn sphere_sphere(s_1: &Sphere, s_2: &Sphere) -> bool {
+pub fn sphere_sphere(
+    sphere_a: &Sphere,
+    sphere_b: &Sphere,
+    iso_a: &Isometry3<f32>,
+    iso_b: &Isometry3<f32>,
+) -> bool {
     // Check if sum of radiuses >= distance
-    let squared_distance = distance_squared(&s_1.center, &s_2.center);
-
-    let radiuses = s_1.radius + s_2.radius;
+    let diff: Vector3<f32> = (iso_a.translation.vector - iso_b.translation.vector);
+    let squared_distance: f32 = diff.norm_squared();
+    let radiuses = sphere_a.radius + sphere_b.radius;
 
     if squared_distance <= radiuses * radiuses {
         return true;
