@@ -1,14 +1,11 @@
-use std::any::Any;
+use kiss3d::nalgebra::{Isometry3, Point3, Unit, UnitVector3, Vector3};
 
-use kiss3d::nalgebra::{
-    abs, distance_squared, Isometry3, Point3, RealField, Unit, UnitVector3, Vector3,
-};
-
-use crate::shapes::{bounding_volume::BoundingVolume, shape::Shape, sphere::Sphere, GameObject};
+use crate::shapes::{bounding_volume::BoundingVolume, sphere::Sphere, GameObject};
 
 mod tests;
 
-/// The broad phase, where we check for possible collisions using AABB. Returns collision pairs
+/// The broad phase, where we check for possible collisions using AABB.
+/// Returns collision pairs
 pub fn broad_phase(objects: &Vec<GameObject>) -> Vec<(&GameObject, &GameObject)> {
     // This is a naive solution at O(n^2), the plan is to do a Dynamic Bounding Volume Tree at some point
     let mut collisions: Vec<(&GameObject, &GameObject)> =
@@ -31,11 +28,23 @@ pub fn broad_phase(objects: &Vec<GameObject>) -> Vec<(&GameObject, &GameObject)>
     return collisions;
 }
 
-/// Checks collision pairs if they actually collide
-pub fn narrow_phase(pairs: &mut Vec<(&GameObject, &GameObject)>) {}
+/// Calculates collision manifolds for the given collision pairs
+/// Returns a list of manifolds in the same order
+pub fn narrow_phase(pairs: &Vec<(&GameObject, &GameObject)>) -> Vec<CollisionManifold> {
+    let mut manifolds: Vec<CollisionManifold> = Vec::with_capacity(pairs.len());
+    for (obj_1, obj_2) in pairs {
+        // pattern-match the specific collision
+        if let (Some(sph_1), Some(sph_2)) = (obj_1.shape.as_sphere(), obj_2.shape.as_sphere()) {
+            let manifold =
+                CollisionManifold::sphere_sphere(&sph_1, &sph_2, &obj_1.position, &obj_2.position);
+            manifolds.push(manifold);
+        }
+    }
+    return manifolds;
+}
 
-/// Collision check for two spheres
-pub fn sphere_sphere(
+/// Collision check for two spheres with given translation
+fn sphere_sphere(
     sphere_a: &Sphere,
     sphere_b: &Sphere,
     iso_a: &Isometry3<f32>,
