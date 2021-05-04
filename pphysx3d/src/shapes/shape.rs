@@ -8,5 +8,5 @@ use super::{
 pub trait Shape {
     fn compute_aabb(&self, pos: &Isometry3<f32>) -> AABB;
     fn compute_bounding_sphere(&self, pos: &Isometry3<f32>) -> BoundingSphere;
-    fn as_sphere(&self) -> Option<Sphere>;
+    fn as_sphere(&self) -> Option<&Sphere>;
 }
