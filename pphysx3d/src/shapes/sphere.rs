@@ -5,6 +5,7 @@ use kiss3d::nalgebra::{self as na, Isometry3, Point3, Vector3};
 
 use super::{bounding_volume::BoundingSphere, shape::Shape};
 
+#[derive(Debug, PartialEq)]
 pub struct Sphere {
     pub radius: f32,
 }
@@ -32,5 +33,9 @@ impl Shape for Sphere {
     }
     fn compute_bounding_sphere(&self, pos: &Isometry3<f32>) -> BoundingSphere {
         self.bounding_sphere(pos)
+    }
+
+    fn as_sphere(&self) -> Option<&Sphere> {
+        Some(self)
     }
 }
