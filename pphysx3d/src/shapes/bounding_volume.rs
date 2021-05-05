@@ -9,8 +9,8 @@ pub trait BoundingVolume {
 
 pub struct AABB {
     //two points is all it takes to represent a box
-    mins: Point3<f32>,
-    maxs: Point3<f32>,
+    pub mins: Point3<f32>,
+    pub maxs: Point3<f32>,
 }
 
 impl AABB {
