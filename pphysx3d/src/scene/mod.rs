@@ -1,6 +1,6 @@
-use kiss3d::nalgebra::Translation;
 use crate::collision::*;
 use crate::shapes::{bounding_volume::BoundingVolume, GameObject};
+use kiss3d::nalgebra::Translation;
 
 mod tests;
 pub struct PhysicsScene {
@@ -45,54 +45,47 @@ impl PhysicsScene {
             //object.position.translation.vector + object.velocity*time_step;
         }
     }
-
-    
 }
 
-    /// The broad phase, where we check for possible collisions using AABB.
-    /// Returns indices for collision pairs
-    fn broad_phase(objects: &Vec<GameObject>) -> Vec<(usize, usize)> {
-        // This is a naive solution at O(n^2), the plan is to do a Bounding Volume Tree at some point
-        let mut collisions: Vec<(usize, usize)> = Vec::with_capacity(objects.len() * objects.len());
-        for current_i in 0..objects.len() {
-            let current = &objects[current_i];
-            for test_i in current_i..objects.len() {
-                let test = &objects[test_i];
-                if current_i != test_i
-                    && current
-                        .shape
-                        .compute_aabb(&current.position)
-                        .interects(&test.shape.compute_aabb(&current.position))
-                {
-                    collisions.push((current_i, test_i));
-                }
+/// The broad phase, where we check for possible collisions using AABB.
+/// Returns indices for collision pairs
+fn broad_phase(objects: &Vec<GameObject>) -> Vec<(usize, usize)> {
+    // This is a naive solution at O(n^2), the plan is to do a Bounding Volume Tree at some point
+    let mut collisions: Vec<(usize, usize)> = Vec::with_capacity(objects.len() * objects.len());
+    for current_i in 0..objects.len() {
+        let current = &objects[current_i];
+        for test_i in current_i..objects.len() {
+            let test = &objects[test_i];
+            if current_i != test_i
+                && current
+                    .shape
+                    .compute_aabb(&current.position)
+                    .interects(&test.shape.compute_aabb(&current.position))
+            {
+                collisions.push((current_i, test_i));
             }
         }
-
-        return collisions;
     }
 
-    /// Calculates collision manifolds for the given collision pairs.
-    /// Returns a list of manifolds in the same order as `pairs`
-    pub fn narrow_phase(
-        objects: &Vec<GameObject>,
-        pairs: &Vec<(usize, usize)>,
-    ) -> Vec<CollisionManifold> {
-        let mut manifolds: Vec<CollisionManifold> = Vec::with_capacity(pairs.len());
-        for (obj_1, obj_2) in pairs {
-            let obj_1 = &objects[*obj_1];
-            let obj_2 = &objects[*obj_2];
-            // pattern-match the specific collision
-            if let (Some(sph_1), Some(sph_2)) = (obj_1.shape.as_sphere(), obj_2.shape.as_sphere()) {
-                let manifold = CollisionManifold::sphere_sphere(
-                    &sph_1,
-                    &sph_2,
-                    &obj_1.position,
-                    &obj_2.position,
-                );
-                manifolds.push(manifold);
-            }
+    return collisions;
+}
+
+/// Calculates collision manifolds for the given collision pairs.
+/// Returns a list of manifolds in the same order as `pairs`
+pub fn narrow_phase(
+    objects: &Vec<GameObject>,
+    pairs: &Vec<(usize, usize)>,
+) -> Vec<CollisionManifold> {
+    let mut manifolds: Vec<CollisionManifold> = Vec::with_capacity(pairs.len());
+    for (obj_1, obj_2) in pairs {
+        let obj_1 = &objects[*obj_1];
+        let obj_2 = &objects[*obj_2];
+        // pattern-match the specific collision
+        if let (Some(sph_1), Some(sph_2)) = (obj_1.shape.as_sphere(), obj_2.shape.as_sphere()) {
+            let manifold =
+                CollisionManifold::sphere_sphere(&sph_1, &sph_2, &obj_1.position, &obj_2.position);
+            manifolds.push(manifold);
         }
-        return manifolds;
     }
-
+    return manifolds;
+}
