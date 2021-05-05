@@ -14,6 +14,7 @@ impl Cube {
     fn new(half_extents: Vector3<f32>) -> Cube {
         Cube { half_extents }
     }
+    /// Returns the axis-aligned bounding box of the cube with the position given Isome
     fn aabb(&self, pos: &Isometry3<f32>) -> AABB {
         let center = Point3::from(pos.translation.vector);
         let absolute_pos_vector: Vector3<f32> = pos.global_vector(&self.half_extents); // change of basis so we get the half extents in global space
