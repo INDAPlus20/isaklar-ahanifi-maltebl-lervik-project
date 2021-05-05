@@ -1,14 +1,14 @@
-use crate::shapes::GameObject;
 use crate::collision::*;
+use crate::shapes::GameObject;
 
 pub struct PhysicsScene {
-    objects: Vec<GameObject>
+    pub objects: Vec<GameObject>,
 }
 
 impl PhysicsScene {
     pub fn new() -> PhysicsScene {
         PhysicsScene {
-            objects: Vec::new()
+            objects: Vec::new(),
         }
     }
 
@@ -29,17 +29,18 @@ impl PhysicsScene {
         // Detect collisions
         let collision_pairs = broad_phase(&self.objects);
         let manifolds = narrow_phase(&self.objects, &collision_pairs);
-        
+
         // Resolve Collisions & Apply impulse
 
         // update positions
         self.update_positions(time_step);
     }
 
-    /// Updates the positions according to their linear velocity, with timestep `time` 
+    /// Updates the positions according to their linear velocity, with timestep `time`
     fn update_positions(&mut self, time_step: f32) {
         for object in &mut self.objects {
-            object.position.translation.vector = object.position.translation.vector + object.velocity*time_step;
+            object.position.translation.vector =
+                object.position.translation.vector + object.velocity * time_step;
         }
     }
 }
