@@ -8,8 +8,7 @@ mod tests;
 /// Returns collision pairs
 pub fn broad_phase(objects: &Vec<GameObject>) -> Vec<(usize, usize)> {
     // This is a naive solution at O(n^2), the plan is to do a Bounding Volume Tree at some point
-    let mut collisions: Vec<(usize, usize)> =
-        Vec::with_capacity(objects.len() * objects.len());
+    let mut collisions: Vec<(usize, usize)> = Vec::with_capacity(objects.len() * objects.len());
     for current_i in 0..objects.len() {
         let current = &objects[current_i];
         for test_i in current_i..objects.len() {
@@ -28,9 +27,12 @@ pub fn broad_phase(objects: &Vec<GameObject>) -> Vec<(usize, usize)> {
     return collisions;
 }
 
-/// Calculates collision manifolds for the given collision pairs. 
+/// Calculates collision manifolds for the given collision pairs.
 /// Returns a list of manifolds in the same order as `pairs`
-pub fn narrow_phase(objects: &Vec<GameObject>, pairs: &Vec<(usize, usize)>) -> Vec<CollisionManifold> {
+pub fn narrow_phase(
+    objects: &Vec<GameObject>,
+    pairs: &Vec<(usize, usize)>,
+) -> Vec<CollisionManifold> {
     let mut manifolds: Vec<CollisionManifold> = Vec::with_capacity(pairs.len());
     for (obj_1, obj_2) in pairs {
         let obj_1 = &objects[*obj_1];
