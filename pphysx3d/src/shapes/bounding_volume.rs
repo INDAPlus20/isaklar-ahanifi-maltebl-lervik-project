@@ -1,6 +1,6 @@
 use core::f32;
 
-use kiss3d::nalgebra::{self as na, Point, Point3, Vector2, Vector3};
+use kiss3d::nalgebra::{self as na, Point3, Vector3};
 
 pub trait BoundingVolume {
     fn interects(&self, other: &Self) -> bool;
@@ -9,7 +9,7 @@ pub trait BoundingVolume {
 
 pub struct AABB {
     //two points is all it takes to represent a box
-    mins: Point3<f32>, 
+    mins: Point3<f32>,
     maxs: Point3<f32>,
 }
 
@@ -34,7 +34,6 @@ impl AABB {
 }
 
 impl BoundingVolume for AABB {
-
     fn contains(&self, other: &Self) -> bool {
         na::partial_le(&self.mins, &other.mins) && na::partial_ge(&self.maxs, &other.maxs)
     }

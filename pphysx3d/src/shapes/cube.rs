@@ -1,6 +1,11 @@
 use kiss3d::nalgebra::{Isometry3, Point3, Vector3};
 
-use super::{bounding_volume::{BoundingSphere, AABB}, shape::Shape, sphere::Sphere, utils::IsometryOperations};
+use super::{
+    bounding_volume::{BoundingSphere, AABB},
+    shape::Shape,
+    sphere::Sphere,
+    utils::IsometryOperations,
+};
 
 struct Cube {
     /// The values of the half extents in the following order x, y, z
