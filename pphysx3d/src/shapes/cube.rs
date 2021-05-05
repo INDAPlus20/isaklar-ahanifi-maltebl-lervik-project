@@ -29,9 +29,11 @@ impl Cube {
 }
 
 impl Shape for Cube {
+    /// Returns the axis-aligned bounding box of the cube with the position and rotation given by the  ```pos: &Isometry3<f32>```
     fn compute_aabb(&self, pos: &Isometry3<f32>) -> AABB {
         self.aabb(pos)
     }
+    /// Returns the bounding sphere of the cube with the position given by the ```pos: &Isometry3<f32>```
     fn compute_bounding_sphere(&self, pos: &Isometry3<f32>) -> BoundingSphere {
         self.bounding_sphere(pos)
     }
