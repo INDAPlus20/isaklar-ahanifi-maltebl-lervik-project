@@ -1,0 +1,40 @@
+use super::*;
+use kiss3d::nalgebra::Translation3;
+use kiss3d::nalgebra::{Isometry3, Point3, Unit, UnitVector3, Vector3, UnitQuaternion};
+
+use crate::shapes::{bounding_volume::BoundingVolume, sphere::Sphere, GameObject};
+
+#[test]
+fn update_position_test(){
+    let sphere_1 = Box::new(Sphere::new(2.0f32));
+    let sphere_2 = Box::new(Sphere::new(2.0f32));
+    let iso_1 = Isometry3::from_parts(
+        Translation3::new(0f32, 0f32, 0f32),
+        UnitQuaternion::new(Vector3::y() * std::f32::consts::FRAC_PI_2),
+    );
+    let iso_2 = Isometry3::from_parts(
+        Translation3::new(0f32, 0f32, 0f32),
+        UnitQuaternion::new(Vector3::y() * std::f32::consts::FRAC_PI_2),
+    );
+    let object_1 = GameObject {
+        shape: sphere_1,
+        position: iso_1,
+        velocity: Vector3::new(1f32, 0f32, 0f32),
+        mass: 0f32,
+    };
+    let object_2 = GameObject {
+        shape: sphere_2,
+        position: iso_2,
+        velocity: Vector3::new(0f32, 0f32, 1f32),
+        mass: 0f32,
+    };
+    let objects = vec![object_1, object_2];
+    let mut scene = PhysicsScene::new();
+    for object in objects {
+        scene.add(object)
+    }
+
+    scene.update_positions(1.);
+    assert_eq!(scene.objects[0].position.translation, Translation3::new(1f32, 0f32, 0f32));
+    assert_eq!(scene.objects[1].position.translation, Translation3::new(0f32, 0f32, 1f32));
+}
