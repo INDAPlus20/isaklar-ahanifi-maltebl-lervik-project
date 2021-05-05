@@ -68,7 +68,6 @@ fn broad_phase_collision() {
     assert_eq!(collisions.len(), 1);
     assert_eq!(0, collisions[0].0);
     assert_eq!(1, collisions[0].1);
-    //print!("{:?} \n {:?}\n", objects[0].compute_aabb(), objects[1].compute_aabb())
 }
 
 #[test]
