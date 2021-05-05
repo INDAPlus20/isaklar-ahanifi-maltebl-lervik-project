@@ -36,6 +36,6 @@ fn kiss3d_rendering() {
     scene.add(object_2);
     loop {
         scene.update(0.1);
-        renderer.draw(&scene.objects).unwrap();
+        renderer.draw(&scene.get_objects()).unwrap();
     }
 }
