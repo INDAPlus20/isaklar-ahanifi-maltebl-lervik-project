@@ -111,7 +111,7 @@ impl Renderer for Kiss3dRenderer {
         Err(String::from("Error: Window closed for rendering"))
     }
 
-    /// Add a rendered SceneNide to the renderer
+    /// Add a rendered SceneNode to the renderer
     fn add_obj(&mut self, object: &GameObject) -> Result<(), String> {
         let mut new_node = self.node_from_shape(object.shape.as_ref());
         new_node.set_color(1.0, 0.0, 0.0);
