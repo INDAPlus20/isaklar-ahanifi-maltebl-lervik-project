@@ -1,10 +1,13 @@
-use kiss3d::nalgebra::{self as na, Isometry3, Point3, Vector2};
+use kiss3d::nalgebra::{self as na, Isometry3, Point3};
 use na::Vector3;
 
-use self::{shape::Shape, sphere::Sphere};
+use self::shape::Shape;
+
 pub mod bounding_volume;
+pub mod cube;
 pub mod shape;
 pub mod sphere;
+
 mod tests;
 mod utils;
 struct Particle {

@@ -1,4 +1,4 @@
-use kiss3d::nalgebra::{Isometry3, Point3};
+use kiss3d::nalgebra::Isometry3;
 
 use super::{
     bounding_volume::{BoundingSphere, AABB},
