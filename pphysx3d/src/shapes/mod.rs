@@ -7,11 +7,7 @@ pub mod bounding_volume;
 pub mod cube;
 pub mod shape;
 pub mod sphere;
-<<<<<<< HEAD
 pub mod plane;
-=======
-
->>>>>>> 3ab779eb3d0f00d1ff7f9456052a417eb158453d
 mod tests;
 mod utils;
 struct Particle {
