@@ -42,10 +42,6 @@ impl PhysicsScene {
         self.update_positions(time_step);
     }
 
-    pub fn objects(&self) -> &[GameObject] {
-        &self.objects
-    }
-
     /// Updates the positions according to their linear velocity, with timestep `time`
     fn update_positions(&mut self, time_step: f32) {
         for object in &mut self.objects {

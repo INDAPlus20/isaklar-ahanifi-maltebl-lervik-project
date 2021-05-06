@@ -29,8 +29,8 @@ impl Kiss3dRenderer {
     /// rotation and movement holding left/right mouse button
     pub fn new(title: &str, width: u32, height: u32) -> Kiss3dRenderer {
         let mut camera = kiss3d::camera::FirstPerson::new(
-            Point3::new(0.0, 0.0, -1.0),
             Point3::new(0.0, 0.0, 0.0),
+            Point3::new(0.3, 0.2, 1.0),
         );
 
         camera.set_move_step(0.1);
@@ -85,7 +85,10 @@ impl Kiss3dRenderer {
     ///Match a Shape with a Scene Node to render
     fn node_from_shape(&mut self, shape: &dyn Shape) -> SceneNode {
         if let Ok(sphere) = shape.as_sphere() {
-            return self.window.add_sphere(sphere.radius);
+            self.window.add_sphere(sphere.radius)
+        } else if let Ok(cube) = shape.as_cube() {
+            let extents = cube.half_extents * 2.0;
+            self.window.add_cube(extents.x, extents.y, extents.z)
         } else {
             panic!()
         }

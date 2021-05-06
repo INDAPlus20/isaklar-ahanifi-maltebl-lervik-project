@@ -1,4 +1,4 @@
-use super::{bounding_volume::BoundingSphere, shape::Shape};
+use super::{bounding_volume::BoundingSphere, cube::Cube, shape::Shape};
 use crate::shapes::bounding_volume::AABB;
 use core::f32;
 use kiss3d::nalgebra::{Isometry3, Point3, Vector3};
@@ -37,5 +37,9 @@ impl Shape for Sphere {
 
     fn as_sphere(&self) -> Result<&Sphere, ()> {
         Ok(self)
+    }
+
+    fn as_cube(&self) -> Result<&Cube, ()> {
+        Err(())
     }
 }
