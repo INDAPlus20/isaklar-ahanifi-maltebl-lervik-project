@@ -5,9 +5,9 @@ use self::shape::Shape;
 
 pub mod bounding_volume;
 pub mod cube;
+pub mod plane;
 pub mod shape;
 pub mod sphere;
-pub mod plane;
 mod tests;
 mod utils;
 struct Particle {
