@@ -24,6 +24,10 @@ impl PhysicsScene {
         self.objects.remove(index);
     }
 
+    pub fn objects(&self) -> &[GameObject] {
+        &self.objects
+    }
+
     /// Updates the physics in the scene, such as collisions
     pub fn update(&mut self, time_step: f32) {
         // Physics loop

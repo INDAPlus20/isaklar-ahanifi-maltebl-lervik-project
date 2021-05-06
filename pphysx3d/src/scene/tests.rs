@@ -65,11 +65,9 @@ fn broad_phase_collision() {
     };
     let objects = vec![object_1, object_2];
     let collisions = broad_phase(&objects);
-    //println!("{:?}", collisions.len());
     assert_eq!(collisions.len(), 1);
     assert_eq!(0, collisions[0].0);
     assert_eq!(1, collisions[0].1);
-    //print!("{:?} \n {:?}\n", objects[0].compute_aabb(), objects[1].compute_aabb())
 }
 
 #[test]
