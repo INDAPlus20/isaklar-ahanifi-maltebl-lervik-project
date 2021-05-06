@@ -45,7 +45,7 @@ impl BoundingVolume for AABB {
     /// Checks if there is an intersection. Also returns true if self contains other
     fn interects(&self, other: &Self) -> bool {
         //a::partial_le(&self.mins, &other.maxs) && na::partial_ge(&self.maxs, &other.mins)
-        self.mins <= other.maxs && self.maxs >= other.mins
+        self.mins <= other.maxs() && self.maxs >= other.mins()
     }
 }
 
