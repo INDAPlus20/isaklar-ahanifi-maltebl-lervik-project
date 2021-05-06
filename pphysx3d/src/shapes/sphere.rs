@@ -35,7 +35,7 @@ impl Shape for Sphere {
         self.bounding_sphere(pos)
     }
 
-    fn as_sphere(&self) -> Option<&Sphere> {
-        Some(self)
+    fn as_sphere(&self) -> Result<&Sphere, ()> {
+        Ok(self)
     }
 }

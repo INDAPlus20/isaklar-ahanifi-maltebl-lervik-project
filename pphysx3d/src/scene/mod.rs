@@ -38,7 +38,7 @@ impl PhysicsScene {
         self.update_positions(time_step);
     }
 
-    pub fn get_objects(&self) -> &[GameObject] {
+    pub fn objects(&self) -> &[GameObject] {
         &self.objects
     }
 
@@ -85,7 +85,7 @@ pub fn narrow_phase(
         let obj_1 = &objects[*obj_1];
         let obj_2 = &objects[*obj_2];
         // pattern-match the specific collision
-        if let (Some(sph_1), Some(sph_2)) = (obj_1.shape.as_sphere(), obj_2.shape.as_sphere()) {
+        if let (Ok(sph_1), Ok(sph_2)) = (obj_1.shape.as_sphere(), obj_2.shape.as_sphere()) {
             let manifold =
                 CollisionManifold::sphere_sphere(&sph_1, &sph_2, &obj_1.position, &obj_2.position);
             manifolds.push(manifold);
