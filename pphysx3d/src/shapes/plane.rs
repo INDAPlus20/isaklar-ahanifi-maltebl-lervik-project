@@ -40,7 +40,11 @@ impl Shape for Plane {
         let center: Point3<f32> = Point3::new(0.0, 0.0, 0.0);
         return BoundingSphere::new(f32::MAX / 2.0, center);
     }
-    fn as_sphere(&self) -> Option<&Sphere> {
-        return None;
+    fn as_sphere(&self) -> Result<&Sphere,()> {
+        return Err(());
+    }
+    
+    fn as_cube(&self) -> Result<&Cube,()> {
+        return Err(());
     }
 }
