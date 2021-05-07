@@ -32,6 +32,7 @@ pub struct GameObject {
     force_accum: Vector3<f32>,
     //texture:
     pub inverse_mass: f32,
+    pub restitution: f32, // elasticity aka bounciness. rename to bounciness?
 }
 
 impl GameObject {
