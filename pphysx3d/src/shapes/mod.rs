@@ -1,4 +1,4 @@
-use kiss3d::nalgebra::{self as na, Isometry3, Point3};
+use kiss3d::nalgebra::{self as na, Isometry3, Point3, Translation};
 use na::Vector3;
 
 use self::shape::Shape;
@@ -50,7 +50,7 @@ impl GameObject {
         return INFINITY;
     }
 
-    fn add_force(&mut self, force: Vector3<f32>) {
+    pub fn add_force(&mut self, force: Vector3<f32>) {
         self.force_accum = self.force_accum + force;
     }
 
@@ -62,7 +62,8 @@ impl GameObject {
     // Pretty much just Explicit Euler, might want to change to something like Verlet 
     fn integrate(&mut self) {
         // Update linear position
-        self.position.translation = self.position.translation + DURATION * self.velocity;
+        //self.position.translation = self.position.translation.one() * Translation::from(DURATION * self.velocity);
+        self.position.translation = Translation::from(self.position.translation.vector + DURATION * self.velocity);
 
         // Calculate acceleration from force
         self.acceleration = self.acceleration + self.inverse_mass * self.force_accum;
