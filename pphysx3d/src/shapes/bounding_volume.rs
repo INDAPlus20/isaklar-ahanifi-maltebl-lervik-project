@@ -18,12 +18,12 @@ impl AABB {
     pub fn new(mins: Point3<f32>, maxs: Point3<f32>) -> AABB {
         AABB { mins, maxs }
     }
-      pub fn mins(&self) -> Point3<f32>{
-            self.mins
-      }
-      pub fn maxs(&self) -> Point3<f32>{
-            self.maxs
-      }
+    pub fn mins(&self) -> Point3<f32> {
+        self.mins
+    }
+    pub fn maxs(&self) -> Point3<f32> {
+        self.maxs
+    }
     /// Creates a new axis-aligned bounding box with the given half extents    
     pub fn from_half_extents(center: Point3<f32>, half_extents: Vector3<f32>) -> AABB {
         let mins: Point3<f32> = center - half_extents;

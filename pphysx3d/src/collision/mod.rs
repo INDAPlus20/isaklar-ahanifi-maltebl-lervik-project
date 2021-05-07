@@ -1,6 +1,6 @@
 use kiss3d::nalgebra::{Isometry3, Point3, Unit, UnitVector3, Vector3};
 
-use crate::shapes::{bounding_volume::BoundingVolume, sphere::Sphere, GameObject};
+use crate::shapes::{bounding_volume::BoundingVolume, plane::Plane, sphere::Sphere, GameObject};
 
 mod tests;
 
@@ -17,6 +17,26 @@ fn sphere_sphere(
     let radiuses = sphere_a.radius + sphere_b.radius;
 
     if squared_distance <= radiuses * radiuses {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+/// Collision check for a sphere and a plane
+fn sphere_plane(
+    sphere: &Sphere,
+    plane: &Plane,
+    iso_s: &Isometry3<f32>,
+    iso_p: &Isometry3<f32>,
+) -> bool {
+    // Find the closest point (thank god for linalg)
+    let normal: UnitVector3<f32> = iso_s.rotation * plane.normal();
+    let dist_to_center = iso_p.translation.vector - iso_s.translation.vector;
+    // project the distance vector onto the normal
+    let proj: Vector3<f32> = normal.scale(normal.dot(&dist_to_center));
+    let dist_squared = proj.norm_squared();
+    if dist_squared <= sphere.radius * sphere.radius {
         return true;
     } else {
         return false;
@@ -66,6 +86,36 @@ impl CollisionManifold {
         let contact_point: Point3<f32> =
             (iso_a.translation.vector + manifold.normal.scale(point_dist)).into();
         manifold.contacts.push(contact_point);
+
+        return manifold;
+    }
+
+    pub fn sphere_plane(
+        sphere: &Sphere,
+        plane: &Plane,
+        iso_s: &Isometry3<f32>,
+        iso_p: &Isometry3<f32>,
+    ) -> CollisionManifold {
+        let mut manifold = CollisionManifold::new();
+
+        // project the distance between the sphere center and plane center onto the plane normal
+        let normal: UnitVector3<f32> = iso_s.rotation * plane.normal();
+        let dist_to_center = iso_p.translation.vector - iso_s.translation.vector;
+        let proj: Vector3<f32> = normal.scale(normal.dot(&dist_to_center));
+        let dist_squared = proj.norm_squared();
+
+        // check if colliding
+        if dist_squared <= sphere.radius * sphere.radius {
+            manifold.colliding = true;
+        } else {
+            // return the default manifold
+            return manifold;
+        }
+
+        manifold.depth = sphere.radius - normal.dot(&dist_to_center);
+        let contact_point: Point3<f32> = Point3::from(iso_s.translation.vector + proj);
+        manifold.contacts = vec![contact_point];
+        manifold.normal = UnitVector3::new_normalize(proj);
 
         return manifold;
     }

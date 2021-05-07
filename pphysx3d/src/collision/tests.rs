@@ -41,3 +41,63 @@ fn sphere_manifold() {
     };
     assert_eq!(facit, result);
 }
+
+#[test]
+fn sphere_plane_collision_check() {
+    let mut sphere = Sphere::new(2.1f32);
+    let plane = Plane::new(UnitVector3::new_normalize(Vector3::new(0.0, 1.0, 0.0)));
+    let iso_s = Isometry3::from_parts(
+        Translation3::new(0f32, 0f32, 0f32),
+        UnitQuaternion::new(Vector3::y() * std::f32::consts::FRAC_PI_2),
+    );
+    let mut iso_p = Isometry3::from_parts(
+        Translation3::new(0f32, 2f32, 0f32),
+        UnitQuaternion::new(Vector3::y() * std::f32::consts::TAU),
+    );
+    let result = sphere_plane(&sphere, &plane, &iso_s, &iso_p);
+    assert_eq!(result, true);
+
+    sphere.radius = 1.9;
+    let result = sphere_plane(&sphere, &plane, &iso_s, &iso_p);
+    assert_eq!(result, false);
+
+    iso_p = Isometry3::from_parts(
+        Translation3::new(0f32, 0f32, 0f32),
+        UnitQuaternion::new(Vector3::y() * std::f32::consts::FRAC_2_PI),
+    );
+
+    let result = sphere_plane(&sphere, &plane, &iso_s, &iso_p);
+    assert_eq!(result, true);
+
+    iso_p = Isometry3::from_parts(
+        Translation3::new(0f32, 2f32, 0f32),
+        UnitQuaternion::new(Vector3::y() * std::f32::consts::PI),
+    );
+    let result = sphere_plane(&sphere, &plane, &iso_s, &iso_p);
+    assert_eq!(result, false);
+}
+
+
+#[test]
+fn sphere_plane_manifold(){
+    let mut sphere = Sphere::new(2.1f32);
+    let plane = Plane::new(UnitVector3::new_normalize(Vector3::new(0.0, 1.0, 0.0)));
+    let iso_s = Isometry3::from_parts(
+        Translation3::new(0f32, 0f32, 0f32),
+        UnitQuaternion::new(Vector3::y() * std::f32::consts::FRAC_PI_2),
+    );
+    let mut iso_p = Isometry3::from_parts(
+        Translation3::new(0f32, 2f32, 0f32),
+        UnitQuaternion::new(Vector3::y() * std::f32::consts::TAU),
+    );
+    let result = CollisionManifold::sphere_plane(&sphere, &plane, &iso_s, &iso_p);
+
+    let test = CollisionManifold {
+        colliding: true,
+        normal: UnitVector3::new_normalize(Vector3::new(0.0, 1.0, 0.0)),
+        depth: 0.099999905, // Possible rounding errors somewhere
+        contacts: vec![Point3::new(0.0, 2.0, 0.0)],
+    };
+    assert_eq!(test, result);
+    
+}
