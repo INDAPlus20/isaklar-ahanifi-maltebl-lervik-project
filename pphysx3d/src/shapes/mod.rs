@@ -70,7 +70,7 @@ impl GameObject {
     }
 
     // Pretty much just Explicit Euler, might want to change to something like Verlet 
-    fn integrate(&mut self) {
+    pub fn integrate(&mut self) {
         // Update linear position
         //self.position.translation = self.position.translation.one() * Translation::from(DURATION * self.velocity);
         self.position.translation = Translation::from(self.position.translation.vector + DURATION * self.velocity);
@@ -81,7 +81,7 @@ impl GameObject {
         // Calculate new velocity
         self.velocity += DURATION * self.acceleration;
 
-        // NOT SURE IF HAVE TO MAKE NEW ZERO VECTOR
-        self.force_accum = Vector3::new(0., 0., 0.);
+        // (NOT SURE IF HAVE TO MAKE NEW ZERO VECTOR)
+        self.clear_accum();
     }
 }

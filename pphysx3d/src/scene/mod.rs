@@ -84,8 +84,9 @@ impl PhysicsScene {
     /// Updates the positions according to their linear velocity, with timestep `time`
     fn update_positions(&mut self, time_step: f32) {
         for object in &mut self.objects {
-            object.position = Translation::from(object.get_velocity() * time_step) * object.position;
+            //object.position = Translation::from(object.get_velocity() * time_step) * object.position;
             //object.position.translation.vector + object.velocity*time_step;
+            object.integrate();
         }
     }
 }
