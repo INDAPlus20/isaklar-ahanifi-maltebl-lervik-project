@@ -39,7 +39,7 @@ impl PhysicsScene {
         for (i, manifold) in manifolds.iter().enumerate() {
             if manifold.colliding {
                 //&self.objects[i].add_force(Vector3::new(0., 0., 0.)); // this would be how to add new forces but we don't do that right here
-                // I DON'T KNOW IF THIS IS HOW RUST IS SUPPOSED TO BE WRITTEN BTW BUT CARGO IS HAPPY 
+                // I DON'T KNOW IF THIS IS HOW RUST IS SUPPOSED TO BE WRITTEN BTW BUT CARGO IS HAPPY
                 let index = &collision_pairs[i];
                 // Calculate variables for readability: (unnecessary?)
                 let (
@@ -106,15 +106,14 @@ impl PhysicsScene {
                 }
 
                 {
-                    // COLLISION: 
+                    // COLLISION:
                     let object_2: &mut GameObject = &mut self.objects[index.1];
                     let new_velocity_2: Vector3<f32> =
                         velocity_2 - manifold.normal.scale(j / mass_1);
                     object_2.set_velocity(new_velocity_2);
-                    // FRICTION: 
+                    // FRICTION:
                     object_2.add_force(t.normalize().scale(jt));
                 }
-
             }
         }
 
