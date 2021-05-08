@@ -93,8 +93,7 @@ impl PhysicsScene {
                     // jt = magnitude of friction
                     jt = -(1. + e) * (v_r.dot(&t)) / (1. / mass_1 + 1. / mass_2);
                     friction = (object_1.friction * object_2.friction).sqrt();
-                    jt = jt.max(-j * friction).max(-j * friction);
-                    jt = jt.min(j * friction).min(j * friction);
+                    jt = jt.max(-j * friction).min(j * friction);
                 }
 
                 {
