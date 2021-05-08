@@ -35,11 +35,11 @@ impl PhysicsScene {
         let collision_pairs = broad_phase(&self.objects);
         let manifolds = narrow_phase(&self.objects, &collision_pairs);
 
-        // Resolve Collisions & Apply impulse + friction
-        // (BAD CODE THAT NEEDS FIXING TO COMPILE :D)
+        // Resolve collisions & apply impulse + friction
         for (i, manifold) in manifolds.iter().enumerate() {
             if manifold.colliding {
                 //&self.objects[i].add_force(Vector3::new(0., 0., 0.)); // this would be how to add new forces but we don't do that right here
+                // I DON'T KNOW IF THIS IS HOW RUST IS SUPPOSED TO BE WRITTEN BTW BUT CARGO IS HAPPY 
                 let index = &collision_pairs[i];
                 // Calculate variables for readability: (unnecessary?)
                 let (
@@ -88,6 +88,7 @@ impl PhysicsScene {
                     // FRICTION:
                     // t = tangent vector
                     t = v_r - &manifold.normal.scale(v_r.dot(&manifold.normal));
+                    // jt = magnitude of friction
                     jt = -(1. + e) * (v_r.dot(&t)) / (1. / mass_1 + 1. / mass_2);
                     jt = jt.max(-j * object_1.friction).max(-j * object_2.friction);
                     jt = jt.min(j * object_1.friction).min(j * object_2.friction);
@@ -110,7 +111,6 @@ impl PhysicsScene {
                     let new_velocity_2: Vector3<f32> =
                         velocity_2 - manifold.normal.scale(j / mass_1);
                     object_2.set_velocity(new_velocity_2);
-                    object_2.add_force(manifold.normal.scale(jt));
                     // FRICTION: 
                     object_2.add_force(t.normalize().scale(jt));
                 }
