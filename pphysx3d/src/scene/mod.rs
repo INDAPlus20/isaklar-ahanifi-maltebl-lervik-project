@@ -3,6 +3,9 @@ use crate::shapes::{bounding_volume::BoundingVolume, GameObject};
 use kiss3d::nalgebra::{Translation, Vector3};
 use std::cmp::min;
 
+// Easily changable time step: 
+pub const DURATION: f32 = 0.01;
+
 mod tests;
 pub struct PhysicsScene {
     objects: Vec<GameObject>,
@@ -28,7 +31,7 @@ impl PhysicsScene {
     }
 
     /// Updates the physics in the scene, such as collisions
-    pub fn update(&mut self) {
+    pub fn update(&mut self, time_step: f32) {
         // Physics loop
 
         // Detect collisions
@@ -118,13 +121,13 @@ impl PhysicsScene {
         }
 
         // update positions
-        self.update_positions();
+        self.update_positions(DURATION);
     }
 
     /// Updates the positions according to their linear velocity, with timestep `DURATION` declared in shapes/mod.rs
-    fn update_positions(&mut self) {
+    fn update_positions(&mut self, time_step: f32) {
         for object in &mut self.objects {
-            object.integrate();
+            object.integrate(time_step);
         }
     }
 }

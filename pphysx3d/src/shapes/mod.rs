@@ -12,7 +12,6 @@ mod tests;
 mod utils;
 
 pub const INFINITY: f32 = f32::INFINITY;
-pub const DURATION: f32 = 0.01;
 
 struct Particle {
     position: Point3<f32>,
@@ -70,17 +69,17 @@ impl GameObject {
     }
 
     // Pretty much just Explicit Euler, might want to change to something like Verlet
-    pub fn integrate(&mut self) {
+    pub fn integrate(&mut self, dt: f32) {
         // Update linear position
         //self.position.translation = self.position.translation.one() * Translation::from(DURATION * self.velocity);
         self.position.translation =
-            Translation::from(self.position.translation.vector + DURATION * self.velocity);
+            Translation::from(self.position.translation.vector + dt * self.velocity);
 
         // Calculate acceleration from force
         self.acceleration += self.inverse_mass * self.force_accum;
 
         // Calculate new velocity
-        self.velocity += DURATION * self.acceleration;
+        self.velocity += dt * self.acceleration;
 
         // (NOT SURE IF HAVE TO MAKE NEW ZERO VECTOR)
         self.clear_accum();
