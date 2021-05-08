@@ -28,7 +28,7 @@ impl PhysicsScene {
     }
 
     /// Updates the physics in the scene, such as collisions
-    pub fn update(&mut self, time_step: f32) {
+    pub fn update(&mut self) {
         // Physics loop
 
         // Detect collisions
