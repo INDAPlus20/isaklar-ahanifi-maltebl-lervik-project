@@ -3,9 +3,6 @@ use crate::shapes::{bounding_volume::BoundingVolume, GameObject};
 use kiss3d::nalgebra::{Translation, Vector3};
 use std::cmp::min;
 
-// Easily changable time step: 
-pub const DURATION: f32 = 0.01;
-
 mod tests;
 pub struct PhysicsScene {
     objects: Vec<GameObject>,
@@ -31,7 +28,7 @@ impl PhysicsScene {
     }
 
     /// Updates the physics in the scene, such as collisions
-    pub fn update(&mut self) {
+    pub fn update(&mut self, time_step: f32) {
         // Physics loop
 
         // Detect collisions
@@ -48,8 +45,8 @@ impl PhysicsScene {
                 let (
                     mass_1,
                     mass_2,
-                    restitution_1,
-                    restitution_2,
+                    bounciness_1,
+                    bounciness_2,
                     e,
                     j,
                     t,
@@ -79,22 +76,24 @@ impl PhysicsScene {
                     mass_1 = object_1.get_mass();
                     mass_2 = object_2.get_mass();
                     // Relative velocity
-                    velocity_1 = object_1.get_velocity();
-                    velocity_2 = object_2.get_velocity();
+                    velocity_1 = object_1.velocity;
+                    velocity_2 = object_2.velocity;
                     v_r = velocity_1 - velocity_2;
                     // COLLISION:
                     // BOUNCINESS for respective object
-                    restitution_1 = object_1.restitution;
-                    restitution_2 = object_2.restitution;
+                    bounciness_1 = object_1.bounciness;
+                    bounciness_2 = object_2.bounciness;
                     // Coefficient of resitution (e), use smallest one
-                    e = restitution_1.min(restitution_2);
+                    e = bounciness_1.min(bounciness_2);
                     // j = magnitude of impulse used to calculate new velocities
-                    j = -(1. + e) * (v_r.dot(&manifold.normal)) / (1. / mass_1 + 1. / mass_2);
+                    j = -(1. + e) * (v_r.dot(&manifold.normal))
+                        / (object_1.inverse_mass + object_2.inverse_mass);
                     // FRICTION:
                     // t = tangent vector
                     t = v_r - &manifold.normal.scale(v_r.dot(&manifold.normal));
                     // jt = magnitude of friction
-                    jt = -(1. + e) * (v_r.dot(&t)) / (1. / mass_1 + 1. / mass_2);
+                    jt =
+                        -(1. + e) * (v_r.dot(&t)) / (object_1.inverse_mass + object_2.inverse_mass);
                     friction = (object_1.friction * object_2.friction).sqrt();
                     jt = jt.max(-j * friction).min(j * friction);
                 }
@@ -102,26 +101,22 @@ impl PhysicsScene {
                 {
                     // Change velocity of object_1:
                     let object_1: &mut GameObject = &mut self.objects[index.0];
-                    // Calculate new velocities:
-                    let new_velocity_1: Vector3<f32> = velocity_1
+                    object_1.velocity = velocity_1
                         - manifold.normal.scale(j / mass_2)
                         - t * jt * object_1.inverse_mass;
-                    object_1.set_velocity(new_velocity_1);
                 }
 
                 {
                     // Change velocity of object_2:
                     let object_2: &mut GameObject = &mut self.objects[index.1];
-                    let new_velocity_2: Vector3<f32> = velocity_2
-                        - manifold.normal.scale(j / mass_1)
+                    object_2.velocity = velocity_2 - manifold.normal.scale(j / mass_1)
                         + t * jt * object_2.inverse_mass;
-                    object_2.set_velocity(new_velocity_2);
                 }
             }
         }
 
         // update positions
-        self.update_positions(DURATION);
+        self.update_positions(time_step);
     }
 
     /// Updates the positions according to their linear velocity, with timestep `DURATION` declared in shapes/mod.rs

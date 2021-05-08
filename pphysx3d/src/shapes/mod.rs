@@ -26,24 +26,16 @@ struct Ray {
 pub struct GameObject {
     pub shape: Box<dyn Shape>,    // The collider
     pub position: Isometry3<f32>, // includes a translation vector and a rotation part as an unit quaternion
-    velocity: Vector3<f32>,
+    pub velocity: Vector3<f32>,
     acceleration: Vector3<f32>,
     force_accum: Vector3<f32>,
     //texture:
     pub inverse_mass: f32,
-    pub restitution: f32, // elasticity aka bounciness. rename to bounciness?
+    pub bounciness: f32, // elasticity aka bounciness. rename to bounciness?
     pub friction: f32,    // coefficient of friction
 }
 
 impl GameObject {
-    pub fn set_velocity(&mut self, velocity: Vector3<f32>) {
-        self.velocity = velocity;
-    }
-
-    pub fn get_velocity(&self) -> Vector3<f32> {
-        return self.velocity;
-    }
-
     pub fn set_mass(&mut self, mass: f32) {
         self.inverse_mass = 1. / mass;
     }
