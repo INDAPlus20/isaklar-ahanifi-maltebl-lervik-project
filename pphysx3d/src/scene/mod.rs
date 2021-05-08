@@ -119,15 +119,12 @@ impl PhysicsScene {
         }
 
         // update positions
-        self.update_positions(time_step);
+        self.update_positions();
     }
 
-    // WILL PROBABLY UPDATE/REPLACE THIS:
-    /// Updates the positions according to their linear velocity, with timestep `time`
-    fn update_positions(&mut self, time_step: f32) {
+    /// Updates the positions according to their linear velocity, with timestep `DURATION` declared in shapes/mod.rs
+    fn update_positions(&mut self) {
         for object in &mut self.objects {
-            //object.position = Translation::from(object.get_velocity() * time_step) * object.position;
-            //object.position.translation.vector + object.velocity*time_step;
             object.integrate();
         }
     }
