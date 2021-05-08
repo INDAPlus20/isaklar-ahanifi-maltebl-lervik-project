@@ -51,6 +51,7 @@ impl PhysicsScene {
                     j,
                     t,
                     mut jt,
+                    friction,
                     velocity_1,
                     velocity_2,
                     v_r,
@@ -62,6 +63,7 @@ impl PhysicsScene {
                     f32,
                     f32,
                     Vector3<f32>,
+                    f32,
                     f32,
                     Vector3<f32>,
                     Vector3<f32>,
@@ -90,29 +92,28 @@ impl PhysicsScene {
                     t = v_r - &manifold.normal.scale(v_r.dot(&manifold.normal));
                     // jt = magnitude of friction
                     jt = -(1. + e) * (v_r.dot(&t)) / (1. / mass_1 + 1. / mass_2);
-                    jt = jt.max(-j * object_1.friction).max(-j * object_2.friction);
-                    jt = jt.min(j * object_1.friction).min(j * object_2.friction);
+                    friction = (object_1.friction * object_2.friction).sqrt();
+                    jt = jt.max(-j * friction).max(-j * friction);
+                    jt = jt.min(j * friction).min(j * friction);
                 }
 
                 {
-                    // COLLISION:
+                    // Change velocity of object_1:
                     let object_1: &mut GameObject = &mut self.objects[index.0];
                     // Calculate new velocities:
-                    let new_velocity_1: Vector3<f32> =
-                        velocity_1 - manifold.normal.scale(j / mass_2);
+                    let new_velocity_1: Vector3<f32> = velocity_1
+                        - manifold.normal.scale(j / mass_2)
+                        - t * jt * object_1.inverse_mass;
                     object_1.set_velocity(new_velocity_1);
-                    // FRICTION:
-                    object_1.add_force(t.normalize().scale(jt));
                 }
 
                 {
-                    // COLLISION:
+                    // Change velocity of object_2:
                     let object_2: &mut GameObject = &mut self.objects[index.1];
-                    let new_velocity_2: Vector3<f32> =
-                        velocity_2 - manifold.normal.scale(j / mass_1);
+                    let new_velocity_2: Vector3<f32> = velocity_2
+                        - manifold.normal.scale(j / mass_1)
+                        + t * jt * object_2.inverse_mass;
                     object_2.set_velocity(new_velocity_2);
-                    // FRICTION:
-                    object_2.add_force(t.normalize().scale(jt));
                 }
             }
         }
