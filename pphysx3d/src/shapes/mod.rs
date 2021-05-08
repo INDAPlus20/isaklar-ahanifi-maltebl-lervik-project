@@ -27,15 +27,24 @@ struct Ray {
 pub struct GameObject {
     pub shape: Box<dyn Shape>,    // The collider
     pub position: Isometry3<f32>, // includes a translation vector and a rotation part as an unit quaternion
-    pub velocity: Vector3<f32>,
+    velocity: Vector3<f32>,
     acceleration: Vector3<f32>,
     force_accum: Vector3<f32>,
     //texture:
     pub inverse_mass: f32,
     pub restitution: f32, // elasticity aka bounciness. rename to bounciness?
+    pub friction: f32, // coefficient of friction
 }
 
 impl GameObject {
+    pub fn set_velocity(&mut self, velocity: Vector3<f32>) {
+        self.velocity = velocity;
+    }
+
+    pub fn get_velocity(&self) -> &Vector3<f32> {
+        return &self.velocity;
+    }
+
     pub fn set_mass(&mut self, mass: f32) {
         self.inverse_mass = 1. / mass;
     }
@@ -44,7 +53,7 @@ impl GameObject {
         self.inverse_mass = inverse_mass;
     }
 
-    fn get_mass(&mut self) -> f32 {
+    pub fn get_mass(&self) -> f32 {
         if self.inverse_mass != 0. {
             return 1. / self.inverse_mass;
         }
@@ -67,10 +76,10 @@ impl GameObject {
         self.position.translation = Translation::from(self.position.translation.vector + DURATION * self.velocity);
 
         // Calculate acceleration from force
-        self.acceleration = self.acceleration + self.inverse_mass * self.force_accum;
+        self.acceleration += self.inverse_mass * self.force_accum;
 
         // Calculate new velocity
-        self.velocity = self.velocity + DURATION * self.acceleration;
+        self.velocity += DURATION * self.acceleration;
 
         // NOT SURE IF HAVE TO MAKE NEW ZERO VECTOR
         self.force_accum = Vector3::new(0., 0., 0.);
