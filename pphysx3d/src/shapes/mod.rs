@@ -27,13 +27,13 @@ struct Ray {
 pub struct GameObject {
     pub shape: Box<dyn Shape>,    // The collider
     pub position: Isometry3<f32>, // includes a translation vector and a rotation part as an unit quaternion
-    velocity: Vector3<f32>,
+    pub velocity: Vector3<f32>,
     acceleration: Vector3<f32>,
     force_accum: Vector3<f32>,
     //texture:
     pub inverse_mass: f32,
     pub restitution: f32, // elasticity aka bounciness. rename to bounciness?
-    pub friction: f32, // coefficient of friction
+    pub friction: f32,    // coefficient of friction
 }
 
 impl GameObject {
@@ -41,8 +41,8 @@ impl GameObject {
         self.velocity = velocity;
     }
 
-    pub fn get_velocity(&self) -> &Vector3<f32> {
-        return &self.velocity;
+    pub fn get_velocity(&self) -> Vector3<f32> {
+        return self.velocity;
     }
 
     pub fn set_mass(&mut self, mass: f32) {
@@ -69,11 +69,12 @@ impl GameObject {
         self.force_accum = Vector3::new(0., 0., 0.);
     }
 
-    // Pretty much just Explicit Euler, might want to change to something like Verlet 
+    // Pretty much just Explicit Euler, might want to change to something like Verlet
     pub fn integrate(&mut self) {
         // Update linear position
         //self.position.translation = self.position.translation.one() * Translation::from(DURATION * self.velocity);
-        self.position.translation = Translation::from(self.position.translation.vector + DURATION * self.velocity);
+        self.position.translation =
+            Translation::from(self.position.translation.vector + DURATION * self.velocity);
 
         // Calculate acceleration from force
         self.acceleration += self.inverse_mass * self.force_accum;
