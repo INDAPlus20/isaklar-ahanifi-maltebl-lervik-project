@@ -1,7 +1,7 @@
 use kiss3d::nalgebra::{Isometry3, Point3, UnitVector3, Vector3};
 
 use super::ray::Ray;
-
+#[derive(Debug, PartialEq)]
 pub struct RayCastResult {
     pub distance: f32,
     pub contact_point: Point3<f32>,
