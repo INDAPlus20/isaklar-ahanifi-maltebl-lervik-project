@@ -77,9 +77,8 @@ fn sphere_plane_collision_check() {
     assert_eq!(result, false);
 }
 
-
 #[test]
-fn sphere_plane_manifold(){
+fn sphere_plane_manifold() {
     let mut sphere = Sphere::new(2.1f32);
     let plane = Plane::new(UnitVector3::new_normalize(Vector3::new(0.0, 1.0, 0.0)));
     let iso_s = Isometry3::from_parts(
@@ -99,5 +98,4 @@ fn sphere_plane_manifold(){
         contacts: vec![Point3::new(0.0, 2.0, 0.0)],
     };
     assert_eq!(test, result);
-    
 }

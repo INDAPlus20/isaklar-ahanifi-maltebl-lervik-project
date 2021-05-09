@@ -1,4 +1,3 @@
-
 use kiss3d::{camera::FirstPerson, event::Key, nalgebra::Point3, scene::SceneNode, window::Window};
 
 use crate::shapes::{shape::Shape, GameObject};
