@@ -1,6 +1,7 @@
 use crate::collision::*;
 use crate::shapes::{bounding_volume::BoundingVolume, GameObject};
-use kiss3d::nalgebra::Translation;
+use kiss3d::nalgebra::{Translation, Unit, Vector3};
+use std::cmp::min;
 
 mod tests;
 pub struct PhysicsScene {
@@ -9,9 +10,7 @@ pub struct PhysicsScene {
 
 impl PhysicsScene {
     pub fn new() -> PhysicsScene {
-        PhysicsScene {
-            objects: Vec::new(),
-        }
+        PhysicsScene { objects: vec![] }
     }
 
     /// Add a GameObject to the scene
@@ -36,17 +35,73 @@ impl PhysicsScene {
         let collision_pairs = broad_phase(&self.objects);
         let manifolds = narrow_phase(&self.objects, &collision_pairs);
 
-        // Resolve Collisions & Apply impulse
+        // Resolve collisions & apply impulse + friction
+        for (i, manifold) in manifolds.iter().enumerate() {
+            if manifold.colliding {
+                //&self.objects[i].add_force(Vector3::new(0., 0., 0.)); // this would be how to add new forces but we don't do that right here
+                let index = &collision_pairs[i];
+                let manifold_normal = &manifold.normal;
+                let [(impulse1, friction1), (impulse2, friction2)] =
+                    self.calculate_impulse(index.0, index.1, manifold_normal);
+
+                // Change velocity of object_1:
+                self.objects[index.0].velocity -= manifold.normal.scale(impulse1) + friction1;
+
+                // Change velocity of object_2:
+                self.objects[index.1].velocity -= manifold.normal.scale(impulse2) + friction2;
+            }
+        }
 
         // update positions
         self.update_positions(time_step);
     }
 
-    /// Updates the positions according to their linear velocity, with timestep `time`
+    fn calculate_impulse(
+        &self,
+        index_1: usize,
+        index_2: usize,
+        manifold_normal: &Unit<Vector3<f32>>,
+    ) -> [(f32, Vector3<f32>); 2] {
+        let object_1 = &self.objects[index_1];
+        let object_2 = &self.objects[index_2];
+        // Mass for respective object
+        let invmass_1 = object_1.inverse_mass;
+        let invmass_2 = object_2.inverse_mass;
+        // Relative velocity
+        let v_r = object_1.velocity - object_2.velocity;
+        // COLLISION:
+        // Coefficient of resitution (e), use smallest BOUNCINESS for the objects
+        let e = object_1.bounciness.min(object_2.bounciness);
+        // Magnitude of impulse used to calculate new velocities
+        // This may look like possible division by zero if inverse_mass = 0 for both objects. However, that'd mean they're both immovable which means they can't collide. Could also be added as an extra check in broad_phase just to be sure.
+        let impulse_magnitude = -(1. + e) * (v_r.dot(manifold_normal)) / (invmass_1 + invmass_2);
+        // FRICTION:
+        // Tangent vector for the collision
+        let tangent_vector = v_r - manifold_normal.scale(v_r.dot(manifold_normal));
+        // Magnitude of friction
+        let mut friction_magnitude =
+            -(1. + e) * (v_r.dot(&tangent_vector)) / (invmass_1 + invmass_2);
+        let friction = (object_1.friction * object_2.friction).sqrt();
+        friction_magnitude = friction_magnitude
+            .max(-impulse_magnitude * friction)
+            .min(impulse_magnitude * friction);
+
+        [
+            (
+                j * invmass_2,
+                tangent_vector * friction_magnitude * invmass_1,
+            ),
+            (
+                j * invmass_1,
+                tangent_vector * friction_magnitude * invmass_2,
+            ),
+        ]
+    }
+
+    /// Updates the positions according to their linear velocity, with timestep `DURATION` declared in shapes/mod.rs
     fn update_positions(&mut self, time_step: f32) {
         for object in &mut self.objects {
-            object.position = Translation::from(object.velocity * time_step) * object.position;
-            //object.position.translation.vector + object.velocity*time_step;
+            object.integrate(time_step);
         }
     }
 }
