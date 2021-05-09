@@ -39,11 +39,10 @@ impl PhysicsScene {
         for (i, manifold) in manifolds.iter().enumerate() {
             if manifold.colliding {
                 //&self.objects[i].add_force(Vector3::new(0., 0., 0.)); // this would be how to add new forces but we don't do that right here
-                // I DON'T KNOW IF THIS IS HOW RUST IS SUPPOSED TO BE WRITTEN BTW BUT CARGO IS HAPPY
                 let index = &collision_pairs[i];
                 let manifold_normal = &manifold.normal;
                 let [(impulse1, friction1), (impulse2, friction2)] =
-                    self.calculate_impusle(index.0, index.1, manifold_normal);
+                    self.calculate_impulse(index.0, index.1, manifold_normal);
 
                 // Change velocity of object_1:
                 self.objects[index.0].velocity -= manifold.normal.scale(impulse1) + friction1;
@@ -57,7 +56,7 @@ impl PhysicsScene {
         self.update_positions(time_step);
     }
 
-    fn calculate_impusle(
+    fn calculate_impulse(
         &self,
         index_1: usize,
         index_2: usize,
@@ -73,19 +72,29 @@ impl PhysicsScene {
         // COLLISION:
         // Coefficient of resitution (e), use smallest BOUNCINESS for the objects
         let e = object_1.bounciness.min(object_2.bounciness);
-        // j = magnitude of impulse used to calculate new velocities
-        let j = -(1. + e) * (v_r.dot(manifold_normal)) / (invmass_1 + invmass_2);
+        // Magnitude of impulse used to calculate new velocities
+        // This may look like possible division by zero if inverse_mass = 0 for both objects. However, that'd mean they're both immovable which means they can't collide. Could also be added as an extra check in broad_phase just to be sure.
+        let impulse_magnitude = -(1. + e) * (v_r.dot(manifold_normal)) / (invmass_1 + invmass_2);
         // FRICTION:
-        // t = tangent vector
-        let t = v_r - manifold_normal.scale(v_r.dot(manifold_normal));
-        // jt = magnitude of friction
-        let mut jt = -(1. + e) * (v_r.dot(&t)) / (invmass_1 + invmass_2);
+        // Tangent vector for the collision
+        let tangent_vector = v_r - manifold_normal.scale(v_r.dot(manifold_normal));
+        // Magnitude of friction
+        let mut friction_magnitude =
+            -(1. + e) * (v_r.dot(&tangent_vector)) / (invmass_1 + invmass_2);
         let friction = (object_1.friction * object_2.friction).sqrt();
-        jt = jt.max(-j * friction).min(j * friction);
+        friction_magnitude = friction_magnitude
+            .max(-impulse_magnitude * friction)
+            .min(impulse_magnitude * friction);
 
         [
-            (j * invmass_2, t * jt * invmass_1),
-            (j * invmass_1, t * jt * invmass_2),
+            (
+                j * invmass_2,
+                tangent_vector * friction_magnitude * invmass_1,
+            ),
+            (
+                j * invmass_1,
+                tangent_vector * friction_magnitude * invmass_2,
+            ),
         ]
     }
 

@@ -32,7 +32,7 @@ pub struct GameObject {
     //texture:
     pub inverse_mass: f32,
     pub bounciness: f32, // elasticity aka bounciness. rename to bounciness?
-    pub friction: f32,    // coefficient of friction
+    pub friction: f32,   // coefficient of friction
 }
 
 impl GameObject {
@@ -40,11 +40,7 @@ impl GameObject {
         self.inverse_mass = 1. / mass;
     }
 
-    pub fn set_inverse_mass(&mut self, inverse_mass: f32) {
-        self.inverse_mass = inverse_mass;
-    }
-
-    pub fn get_mass(&self) -> f32 {
+    pub fn mass(&self) -> f32 {
         if self.inverse_mass != 0. {
             return 1. / self.inverse_mass;
         }
