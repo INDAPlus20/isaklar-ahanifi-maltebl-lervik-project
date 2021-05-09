@@ -18,7 +18,11 @@ fn kiss3d_rendering() {
         shape: sphere_1,
         position: transform_1,
         velocity: Vector3::new(0.01, 0.0, 0.0),
-        mass: 0.0,
+        acceleration: Vector3::new(0., 0., 0.),
+        force_accum: Vector3::new(0., 0., 0.),
+        inverse_mass: 0.1,
+        bounciness: 0.1,
+        friction: 0.2,
     };
     renderer.add_obj(&object_1).unwrap();
     scene.add(object_1);
@@ -29,7 +33,11 @@ fn kiss3d_rendering() {
         shape: sphere_2,
         position: transform_2,
         velocity: Vector3::new(0.0, 0.0, 0.0),
-        mass: 0.0,
+        acceleration: Vector3::new(0., 0., 0.),
+        force_accum: Vector3::new(0., 0., 0.),
+        inverse_mass: 0.1,
+        bounciness: 0.1,
+        friction: 0.2,
     };
     renderer.add_obj(&object_2).unwrap();
     scene.add(object_2);
@@ -40,7 +48,11 @@ fn kiss3d_rendering() {
         shape: cube_1,
         position: transform_3,
         velocity: Vector3::new(0.0, 0.0, 0.0),
-        mass: 0.0,
+        acceleration: Vector3::new(0., 0., 0.),
+        force_accum: Vector3::new(0., 0., 0.),
+        inverse_mass: 0.1,
+        bounciness: 0.1,
+        friction: 0.2,
     };
     renderer.add_obj(&object_3).unwrap();
     scene.add(object_3);

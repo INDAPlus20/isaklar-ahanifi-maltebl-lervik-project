@@ -27,8 +27,8 @@ pub struct GameObject {
     pub shape: Box<dyn Shape>,    // The collider
     pub position: Isometry3<f32>, // includes a translation vector and a rotation part as an unit quaternion
     pub velocity: Vector3<f32>,
-    acceleration: Vector3<f32>,
-    force_accum: Vector3<f32>,
+    pub acceleration: Vector3<f32>,
+    pub force_accum: Vector3<f32>,
     //texture:
     pub inverse_mass: f32,
     pub bounciness: f32, // elasticity aka coefficient of restitution

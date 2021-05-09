@@ -20,13 +20,21 @@ fn update_position_test() {
         shape: sphere_1,
         position: iso_1,
         velocity: Vector3::new(1f32, 0f32, 0f32),
-        mass: 0f32,
+        acceleration: Vector3::new(0., 0., 0.),
+        force_accum: Vector3::new(0., 0., 0.),
+        inverse_mass: 0.1,
+        bounciness: 0.1,
+        friction: 0.2,
     };
     let object_2 = GameObject {
         shape: sphere_2,
         position: iso_2,
         velocity: Vector3::new(0f32, 0f32, 1f32),
-        mass: 0f32,
+        acceleration: Vector3::new(0., 0., 0.),
+        force_accum: Vector3::new(0., 0., 0.),
+        inverse_mass: 0.1,
+        bounciness: 0.1,
+        friction: 0.2,
     };
     let objects = vec![object_1, object_2];
     let mut scene = PhysicsScene::new();
@@ -55,13 +63,21 @@ fn broad_phase_collision() {
         shape: sphere_1,
         position: transform_1,
         velocity: Vector3::new(0f32, 0f32, 0f32),
-        mass: 0f32,
+        acceleration: Vector3::new(0., 0., 0.),
+        force_accum: Vector3::new(0., 0., 0.),
+        inverse_mass: 0.1,
+        bounciness: 0.1,
+        friction: 0.2,
     };
     let object_2 = GameObject {
         shape: sphere_2,
         position: transform_2,
         velocity: Vector3::new(0f32, 0f32, 0f32),
-        mass: 0f32,
+        acceleration: Vector3::new(0., 0., 0.),
+        force_accum: Vector3::new(0., 0., 0.),
+        inverse_mass: 0.1,
+        bounciness: 0.1,
+        friction: 0.2,
     };
     let objects = vec![object_1, object_2];
     let collisions = broad_phase(&objects);
@@ -86,13 +102,21 @@ fn narrow_phase_collision() {
         shape: sphere_1,
         position: iso_1,
         velocity: Vector3::new(0f32, 0f32, 0f32),
-        mass: 0f32,
+        acceleration: Vector3::new(0., 0., 0.),
+        force_accum: Vector3::new(0., 0., 0.),
+        inverse_mass: 0.1,
+        bounciness: 0.1,
+        friction: 0.2,
     };
     let object_2 = GameObject {
         shape: sphere_2,
         position: iso_2,
         velocity: Vector3::new(0f32, 0f32, 0f32),
-        mass: 0f32,
+        acceleration: Vector3::new(0., 0., 0.),
+        force_accum: Vector3::new(0., 0., 0.),
+        inverse_mass: 0.1,
+        bounciness: 0.1,
+        friction: 0.2,
     };
     let objects = vec![object_1, object_2];
     let collisions = broad_phase(&objects);

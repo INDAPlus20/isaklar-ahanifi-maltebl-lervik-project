@@ -88,11 +88,11 @@ impl PhysicsScene {
 
         [
             (
-                j * invmass_2,
+                impulse_magnitude * invmass_2,
                 tangent_vector * friction_magnitude * invmass_1,
             ),
             (
-                j * invmass_1,
+                impulse_magnitude * invmass_1,
                 tangent_vector * friction_magnitude * invmass_2,
             ),
         ]
