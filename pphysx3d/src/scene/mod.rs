@@ -1,6 +1,6 @@
 use crate::collision::*;
 use crate::shapes::{bounding_volume::BoundingVolume, GameObject};
-use kiss3d::nalgebra::{Translation, Vector3};
+use kiss3d::nalgebra::{Translation, Unit, Vector3};
 use std::cmp::min;
 
 mod tests;
@@ -41,82 +41,52 @@ impl PhysicsScene {
                 //&self.objects[i].add_force(Vector3::new(0., 0., 0.)); // this would be how to add new forces but we don't do that right here
                 // I DON'T KNOW IF THIS IS HOW RUST IS SUPPOSED TO BE WRITTEN BTW BUT CARGO IS HAPPY
                 let index = &collision_pairs[i];
-                // Calculate variables for readability: (unnecessary?)
-                let (
-                    mass_1,
-                    mass_2,
-                    bounciness_1,
-                    bounciness_2,
-                    e,
-                    j,
-                    t,
-                    mut jt,
-                    friction,
-                    velocity_1,
-                    velocity_2,
-                    v_r,
-                ): (
-                    f32,
-                    f32,
-                    f32,
-                    f32,
-                    f32,
-                    f32,
-                    Vector3<f32>,
-                    f32,
-                    f32,
-                    Vector3<f32>,
-                    Vector3<f32>,
-                    Vector3<f32>,
-                );
-                {
-                    let object_1: &GameObject = &self.objects[index.0];
-                    let object_2: &GameObject = &self.objects[index.1];
-                    // Mass for respective object
-                    mass_1 = object_1.get_mass();
-                    mass_2 = object_2.get_mass();
-                    // Relative velocity
-                    velocity_1 = object_1.velocity;
-                    velocity_2 = object_2.velocity;
-                    v_r = velocity_1 - velocity_2;
-                    // COLLISION:
-                    // BOUNCINESS for respective object
-                    bounciness_1 = object_1.bounciness;
-                    bounciness_2 = object_2.bounciness;
-                    // Coefficient of resitution (e), use smallest one
-                    e = bounciness_1.min(bounciness_2);
-                    // j = magnitude of impulse used to calculate new velocities
-                    j = -(1. + e) * (v_r.dot(&manifold.normal))
-                        / (object_1.inverse_mass + object_2.inverse_mass);
-                    // FRICTION:
-                    // t = tangent vector
-                    t = v_r - &manifold.normal.scale(v_r.dot(&manifold.normal));
-                    // jt = magnitude of friction
-                    jt =
-                        -(1. + e) * (v_r.dot(&t)) / (object_1.inverse_mass + object_2.inverse_mass);
-                    friction = (object_1.friction * object_2.friction).sqrt();
-                    jt = jt.max(-j * friction).min(j * friction);
-                }
+                let manifold_normal = &manifold.normal;
+                let [(impulse1, friction1), (impulse2, friction2)] =
+                    self.calculate_impusle(index.0, index.1, manifold_normal);
 
-                {
-                    // Change velocity of object_1:
-                    let object_1: &mut GameObject = &mut self.objects[index.0];
-                    object_1.velocity = velocity_1
-                        - manifold.normal.scale(j / mass_2)
-                        - t * jt * object_1.inverse_mass;
-                }
+                // Change velocity of object_1:
+                self.objects[index.0].velocity -= manifold.normal.scale(impulse1) + friction1;
 
-                {
-                    // Change velocity of object_2:
-                    let object_2: &mut GameObject = &mut self.objects[index.1];
-                    object_2.velocity = velocity_2 - manifold.normal.scale(j / mass_1)
-                        + t * jt * object_2.inverse_mass;
-                }
+                // Change velocity of object_2:
+                self.objects[index.1].velocity -= manifold.normal.scale(impulse2) + friction2;
             }
         }
 
         // update positions
         self.update_positions(time_step);
+    }
+
+    fn calculate_impusle(
+        &self,
+        index_1: usize,
+        index_2: usize,
+        manifold_normal: &Unit<Vector3<f32>>,
+    ) -> [(f32, Vector3<f32>); 2] {
+        let object_1 = &self.objects[index_1];
+        let object_2 = &self.objects[index_2];
+        // Mass for respective object
+        let invmass_1 = object_1.inverse_mass;
+        let invmass_2 = object_2.inverse_mass;
+        // Relative velocity
+        let v_r = object_1.velocity - object_2.velocity;
+        // COLLISION:
+        // Coefficient of resitution (e), use smallest BOUNCINESS for the objects
+        let e = object_1.bounciness.min(object_2.bounciness);
+        // j = magnitude of impulse used to calculate new velocities
+        let j = -(1. + e) * (v_r.dot(manifold_normal)) / (invmass_1 + invmass_2);
+        // FRICTION:
+        // t = tangent vector
+        let t = v_r - manifold_normal.scale(v_r.dot(manifold_normal));
+        // jt = magnitude of friction
+        let mut jt = -(1. + e) * (v_r.dot(&t)) / (invmass_1 + invmass_2);
+        let friction = (object_1.friction * object_2.friction).sqrt();
+        jt = jt.max(-j * friction).min(j * friction);
+
+        [
+            (j * invmass_2, t * jt * invmass_1),
+            (j * invmass_1, t * jt * invmass_2),
+        ]
     }
 
     /// Updates the positions according to their linear velocity, with timestep `DURATION` declared in shapes/mod.rs
