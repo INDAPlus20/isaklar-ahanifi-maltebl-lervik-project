@@ -1,8 +1,16 @@
-use kiss3d::{camera::FirstPerson, event::Key, nalgebra::Point3, scene::SceneNode, window::Window};
+use kiss3d::{
+    camera::FirstPerson,
+    event::Key,
+    nalgebra::{Point3, Translation3, UnitQuaternion, Vector3},
+    scene::SceneNode,
+    window::Window,
+};
 
 use crate::shapes::{shape::Shape, GameObject};
 
 mod tests;
+
+pub const PLANE_SIZE: f32 = 10000.;
 
 pub trait Renderer {
     fn draw(&mut self, gameobjects: &[GameObject]) -> Result<(), String>;
@@ -87,6 +95,14 @@ impl Kiss3dRenderer {
         } else if let Ok(cube) = shape.as_cube() {
             let extents = cube.half_extents * 2.0;
             self.window.add_cube(extents.x, extents.y, extents.z)
+        } else if let Ok(plane) = shape.as_plane() {
+            let mut g = self.window.add_group();
+            let p = g.add_quad(PLANE_SIZE, PLANE_SIZE, 1, 1);
+            g.append_rotation(
+                &UnitQuaternion::rotation_between(&Vector3::z(), plane.normal()).unwrap(),
+            );
+            g.append_translation(&Translation3::new(0., -1., 0.));
+            p
         } else {
             panic!()
         }

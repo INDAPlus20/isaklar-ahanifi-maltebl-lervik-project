@@ -49,4 +49,8 @@ impl Shape for Cube {
     fn as_cube(&self) -> Result<&Cube, ()> {
         Ok(&self)
     }
+
+    fn as_plane(&self) -> Result<&super::plane::Plane, ()> {
+        Err(())
+    }
 }
