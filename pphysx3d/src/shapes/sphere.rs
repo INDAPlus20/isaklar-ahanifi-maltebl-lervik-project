@@ -46,6 +46,7 @@ impl Shape for Sphere {
 }
 
 impl RayCast for Sphere {
+    /// Does a raycast test on `self` with transform `pos: &Isometry3<f32>`
     fn ray_cast(&self, pos: &Isometry3<f32>, ray: &Ray) -> RayCastResult {
         let mut result = RayCastResult::new();
         let distance_to_center: Vector3<f32> = Point3::from(pos.translation.vector) - ray.origin();

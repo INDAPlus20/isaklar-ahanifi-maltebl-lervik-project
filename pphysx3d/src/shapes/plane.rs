@@ -48,6 +48,7 @@ impl Shape for Plane {
 }
 
 impl RayCast for Plane {
+    /// Does a raycast test on `self` with transform `pos: &Isometry3<f32>`
     fn ray_cast(&self, pos: &Isometry3<f32>, ray: &Ray) -> RayCastResult {
         let mut result = RayCastResult::new();
         let normal: UnitVector3<f32> = pos.rotation * self.normal;
