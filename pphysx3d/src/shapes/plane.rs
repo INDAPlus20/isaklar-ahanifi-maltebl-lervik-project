@@ -2,6 +2,8 @@ use kiss3d::nalgebra::{Isometry3, Point3, UnitVector3, Vector3};
 
 use super::{
     bounding_volume::{BoundingSphere, AABB},
+    ray::Ray,
+    raycast::{RayCast, RayCastResult},
     shape::Shape,
     sphere::Sphere,
 };
@@ -42,5 +44,34 @@ impl Shape for Plane {
     }
     fn as_sphere(&self) -> Option<&Sphere> {
         return None;
+    }
+}
+
+impl RayCast for Plane {
+    fn ray_cast(&self, pos: &Isometry3<f32>, ray: &Ray) -> RayCastResult {
+        let mut result = RayCastResult::new();
+        let normal: UnitVector3<f32> = pos.rotation * self.normal;
+        // transform ray origin to local plane coords so that plane equation: N*P = 0;
+        let local_origin = ray.origin() - pos.translation.vector;
+        let nd = normal.dot(ray.direction());
+        let pn = normal.dot(&local_origin.coords);
+
+        // the dot of plane normal and direction have to be negative
+        if nd >= 0.0 {
+            return result;
+        }
+        let toi = (-pn) / nd; // math
+
+        // negative time of impact means hit behind plane (which shouldn't happen according to above check??)
+        if toi < 0.0 {
+            return result;
+        }
+
+        result.contact_point = ray.origin() + ray.direction().scale(toi);
+        result.normal = self.normal;
+        result.hit = true;
+        result.distance = toi;
+
+        return result;
     }
 }
