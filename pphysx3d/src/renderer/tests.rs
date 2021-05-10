@@ -1,9 +1,12 @@
-use kiss3d::nalgebra::{Isometry3, Point3, Vector3};
+use kiss3d::{
+    camera::Camera,
+    nalgebra::{Isometry3, Point3, Unit, UnitQuaternion, Vector3},
+};
 
 use crate::{
     renderer::{Kiss3dRenderer, Renderer},
     scene::PhysicsScene,
-    shapes::{cube::Cube, sphere::Sphere, GameObject},
+    shapes::{cube::Cube, plane::Plane, sphere::Sphere, GameObject},
 };
 
 #[test]
@@ -36,8 +39,8 @@ fn kiss3d_rendering() {
         acceleration: Vector3::new(0., 0., 0.),
         force_accum: Vector3::new(0., 0., 0.),
         inverse_mass: 0.1,
-        bounciness: 0.1,
-        friction: 0.2,
+        bounciness: 0.0,
+        friction: 0.0,
     };
     renderer.add_obj(&object_2).unwrap();
     scene.add(object_2);
@@ -51,18 +54,32 @@ fn kiss3d_rendering() {
         acceleration: Vector3::new(0., 0., 0.),
         force_accum: Vector3::new(0., 0., 0.),
         inverse_mass: 0.1,
-        bounciness: 0.1,
-        friction: 0.2,
+        bounciness: 0.0,
+        friction: 0.0,
     };
     renderer.add_obj(&object_3).unwrap();
     scene.add(object_3);
 
+    let plane_1 = Box::new(Plane::new(Unit::new_normalize(Vector3::new(0., 1., 0.))));
+    let transform_4 = Isometry3::translation(0.0, -1.0, 0.0);
+    let object_4 = GameObject {
+        shape: plane_1,
+        position: transform_4,
+        velocity: Vector3::new(0.0, 0.0, 0.0),
+        acceleration: Vector3::new(0., 0., 0.),
+        force_accum: Vector3::new(0., 0., 0.),
+        inverse_mass: 0.,
+        bounciness: 0.0,
+        friction: 0.0,
+    };
+    renderer.add_obj(&object_4).unwrap();
+    scene.add(object_4);
+
     renderer.change_camera_speed(0.01);
-    renderer.set_background(0.1, 0.1, 0.3);
+    renderer.set_background(0.5, 0.5, 0.5);
     renderer.set_point_light_source(Point3::new(0.0, 5.0, 2.0));
     loop {
         scene.update(0.1);
-        println!("{}", renderer.camera.eye_dir());
         renderer.draw(&scene.objects()).unwrap();
     }
 }

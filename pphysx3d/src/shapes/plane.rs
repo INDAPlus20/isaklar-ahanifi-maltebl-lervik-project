@@ -48,4 +48,8 @@ impl Shape for Plane {
     fn as_cube(&self) -> Result<&Cube, ()> {
         return Err(());
     }
+
+    fn as_plane(&self) -> Result<&Plane, ()> {
+        Ok(&self)
+    }
 }
