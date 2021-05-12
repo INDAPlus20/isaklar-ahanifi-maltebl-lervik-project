@@ -1,7 +1,7 @@
 use crate::collision::*;
 use crate::shapes::bounding_volume::BoundingVolume;
 use game_object::GameObject;
-use kiss3d::nalgebra::{Translation, Unit, Vector3};
+use kiss3d::nalgebra::{Translation, Unit, UnitVector3, Vector3};
 use std::cmp::min;
 
 pub mod game_object;
@@ -131,7 +131,7 @@ fn broad_phase(objects: &Vec<GameObject>) -> Vec<(usize, usize)> {
                 && current
                     .shape()
                     .compute_aabb(&current.position)
-                    .interects(&test.shape().compute_aabb(&current.position))
+                    .interects(&test.shape().compute_aabb(&test.position))
             {
                 collisions.push((current_i, test_i));
             }
@@ -160,12 +160,12 @@ pub fn narrow_phase(
             let manifold =
                 CollisionManifold::sphere_sphere(&sph_1, &sph_2, &obj_1.position, &obj_2.position);
             manifolds.push(manifold);
-        } else if let (Ok(plane), Ok(sphere)) = (obj_1.shape.as_plane(), obj_2.shape.as_sphere()) {
+        } else if let (Ok(plane), Ok(sphere)) = (obj_1.shape().as_plane(), obj_2.shape().as_sphere()) {
             let mut manifold =
                 CollisionManifold::sphere_plane(&sphere, &plane, &obj_1.position, &obj_2.position);
                 manifold.normal = UnitVector3::new_normalize(manifold.normal.scale(-1.0));
             manifolds.push(manifold);
-        } else if let (Ok(sphere), Ok(plane)) = (obj_1.shape.as_sphere(), obj_2.shape.as_plane()) {
+        } else if let (Ok(sphere), Ok(plane)) = (obj_1.shape().as_sphere(), obj_2.shape().as_plane()) {
             let mut manifold =
                 CollisionManifold::sphere_plane(&sphere, &plane, &obj_1.position, &obj_2.position);
             manifolds.push(manifold);
