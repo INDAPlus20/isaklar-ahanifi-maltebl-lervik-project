@@ -5,8 +5,11 @@ use kiss3d::{
 
 use crate::{
     renderer::{Kiss3dRenderer, Renderer},
-    scene::PhysicsScene,
-    shapes::{cube::Cube, plane::Plane, sphere::Sphere, GameObject},
+    scene::{
+        game_object::{GameObject, INFINITY},
+        PhysicsScene,
+    },
+    shapes::{cube::Cube, plane::Plane, sphere::Sphere},
 };
 
 #[test]
@@ -17,61 +20,57 @@ fn kiss3d_rendering() {
 
     let sphere_1 = Box::new(Sphere::new(0.4));
     let transform_1 = Isometry3::translation(0.0, 0.0, 1.5);
-    let object_1 = GameObject {
-        shape: sphere_1,
-        position: transform_1,
-        velocity: Vector3::new(0.01, 0.0, 0.0),
-        acceleration: Vector3::new(0., 0., 0.),
-        force_accum: Vector3::new(0., 0., 0.),
-        inverse_mass: 0.1,
-        bounciness: 0.1,
-        friction: 0.2,
-    };
+    let object_1 = GameObject::new(
+        sphere_1,
+        transform_1,
+        [0.01, 0.0, 0.0],
+        [255, 0, 0],
+        0.1,
+        0.1,
+        0.2,
+    );
     renderer.add_obj(&object_1).unwrap();
     scene.add(object_1);
 
     let sphere_2 = Box::new(Sphere::new(0.2));
     let transform_2 = Isometry3::translation(1.0, 0.0, 1.0);
-    let object_2 = GameObject {
-        shape: sphere_2,
-        position: transform_2,
-        velocity: Vector3::new(0.0, 0.0, 0.0),
-        acceleration: Vector3::new(0., 0., 0.),
-        force_accum: Vector3::new(0., 0., 0.),
-        inverse_mass: 0.1,
-        bounciness: 0.0,
-        friction: 0.0,
-    };
+    let object_2 = GameObject::new(
+        sphere_2,
+        transform_2,
+        [0.0, 0.0, 0.0],
+        [100, 200, 0],
+        0.1,
+        0.1,
+        0.2,
+    );
     renderer.add_obj(&object_2).unwrap();
     scene.add(object_2);
 
     let cube_1 = Box::new(Cube::new(Vector3::new(0.5, 1.0, 1.0)));
     let transform_3 = Isometry3::translation(-1.0, 0.0, 1.2);
-    let object_3 = GameObject {
-        shape: cube_1,
-        position: transform_3,
-        velocity: Vector3::new(0.0, 0.0, 0.0),
-        acceleration: Vector3::new(0., 0., 0.),
-        force_accum: Vector3::new(0., 0., 0.),
-        inverse_mass: 0.1,
-        bounciness: 0.0,
-        friction: 0.0,
-    };
+    let object_3 = GameObject::new(
+        cube_1,
+        transform_3,
+        [0.0, 0.0, 0.0],
+        [0, 0, 0],
+        0.1,
+        0.1,
+        0.2,
+    );
     renderer.add_obj(&object_3).unwrap();
     scene.add(object_3);
 
     let plane_1 = Box::new(Plane::new(Unit::new_normalize(Vector3::new(0., 1., 0.))));
     let transform_4 = Isometry3::translation(0.0, -1.0, 0.0);
-    let object_4 = GameObject {
-        shape: plane_1,
-        position: transform_4,
-        velocity: Vector3::new(0.0, 0.0, 0.0),
-        acceleration: Vector3::new(0., 0., 0.),
-        force_accum: Vector3::new(0., 0., 0.),
-        inverse_mass: 0.,
-        bounciness: 0.0,
-        friction: 0.0,
-    };
+    let object_4 = GameObject::new(
+        plane_1,
+        transform_4,
+        [0.0, 0.0, 0.0],
+        [255, 255, 255],
+        INFINITY,
+        0.0,
+        0.0,
+    );
     renderer.add_obj(&object_4).unwrap();
     scene.add(object_4);
 
