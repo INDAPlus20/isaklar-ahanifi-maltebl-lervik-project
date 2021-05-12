@@ -1,7 +1,7 @@
 use crate::collision::*;
 use crate::shapes::bounding_volume::BoundingVolume;
 use game_object::GameObject;
-use kiss3d::nalgebra::{Translation, Unit, Vector3};
+use kiss3d::nalgebra::{Translation, Unit, UnitVector3, Vector3};
 use std::cmp::min;
 
 pub mod game_object;
@@ -51,10 +51,10 @@ impl PhysicsScene {
                     self.calculate_impulse(index.0, index.1, manifold_normal);
 
                 // Change velocity of object_1:
-                self.objects[index.0].velocity -= manifold.normal.scale(impulse1) + friction1;
+                self.objects[index.0].velocity += manifold.normal.scale(impulse1) + friction1;
 
                 // Change velocity of object_2:
-                self.objects[index.1].velocity += manifold.normal.scale(impulse2) + friction2;
+                self.objects[index.1].velocity -= manifold.normal.scale(impulse2) + friction2;
             }
         }
 
@@ -131,7 +131,7 @@ fn broad_phase(objects: &Vec<GameObject>) -> Vec<(usize, usize)> {
                 && current
                     .shape()
                     .compute_aabb(&current.position)
-                    .interects(&test.shape().compute_aabb(&current.position))
+                    .interects(&test.shape().compute_aabb(&test.position))
             {
                 collisions.push((current_i, test_i));
             }
@@ -151,10 +151,23 @@ pub fn narrow_phase(
     for (obj_1, obj_2) in pairs {
         let obj_1 = &objects[*obj_1];
         let obj_2 = &objects[*obj_2];
+        if obj_1.velocity.dot(&obj_2.velocity) <= 0.0 {
+            manifolds.push(CollisionManifold::new());
+            continue;
+        }
         // pattern-match the specific collision
         if let (Ok(sph_1), Ok(sph_2)) = (obj_1.shape().as_sphere(), obj_2.shape().as_sphere()) {
             let manifold =
                 CollisionManifold::sphere_sphere(&sph_1, &sph_2, &obj_1.position, &obj_2.position);
+            manifolds.push(manifold);
+        } else if let (Ok(plane), Ok(sphere)) = (obj_1.shape().as_plane(), obj_2.shape().as_sphere()) {
+            let mut manifold =
+                CollisionManifold::sphere_plane(&sphere, &plane, &obj_1.position, &obj_2.position);
+                manifold.normal = UnitVector3::new_normalize(manifold.normal.scale(-1.0));
+            manifolds.push(manifold);
+        } else if let (Ok(sphere), Ok(plane)) = (obj_1.shape().as_sphere(), obj_2.shape().as_plane()) {
+            let mut manifold =
+                CollisionManifold::sphere_plane(&sphere, &plane, &obj_1.position, &obj_2.position);
             manifolds.push(manifold);
         }
     }
