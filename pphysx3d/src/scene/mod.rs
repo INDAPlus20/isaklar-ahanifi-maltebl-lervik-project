@@ -4,6 +4,10 @@ use kiss3d::nalgebra::{Translation, Unit, Vector3};
 use std::cmp::min;
 
 mod tests;
+
+// For gravity!!!
+const g: f32 = 9.82;
+
 pub struct PhysicsScene {
     objects: Vec<GameObject>,
 }
@@ -100,7 +104,13 @@ impl PhysicsScene {
 
     /// Updates the positions according to their linear velocity, with timestep `DURATION` declared in shapes/mod.rs
     fn update_positions(&mut self, time_step: f32) {
+        let gravity: Vector3<f32> = Vector3::new(0., -g, 0.); // would declare as constant Vector3 but our nalgebra is too outdated for that atm
         for object in &mut self.objects {
+            // If object is immovable, aka object has infinite mass, then don't apply gravity (as it would be an infinite force)
+            if object.inverse_mass != 0. {
+                object.add_force(gravity * object.mass());
+            }
+            // Integrate one time step
             object.integrate(time_step);
         }
     }
