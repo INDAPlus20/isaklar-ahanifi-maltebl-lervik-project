@@ -42,4 +42,8 @@ impl Shape for Sphere {
     fn as_cube(&self) -> Result<&Cube, ()> {
         Err(())
     }
+
+    fn as_plane(&self) -> Result<&super::plane::Plane, ()> {
+        Err(())
+    }
 }
