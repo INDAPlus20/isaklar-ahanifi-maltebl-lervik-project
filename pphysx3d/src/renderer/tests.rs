@@ -53,7 +53,7 @@ fn kiss3d_rendering() {
         transform_3,
         [0.0, 0.0, 0.0],
         [0, 0, 0],
-        0.1,
+        INFINITY,
         0.1,
         0.2,
     );
@@ -71,6 +71,7 @@ fn kiss3d_rendering() {
         0.0,
         0.0,
     );
+
     renderer.add_obj(&object_4).unwrap();
     scene.add(object_4);
 

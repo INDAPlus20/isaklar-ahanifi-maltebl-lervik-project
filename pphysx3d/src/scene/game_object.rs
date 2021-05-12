@@ -27,6 +27,15 @@ impl GameObject {
         bounciness: f32,
         friction: f32,
     ) -> GameObject {
+        let inv_mass = if mass >= INFINITY - f32::EPSILON {
+            0.
+        } else if mass <= f32::EPSILON {
+            //How should mass= 0 be handled?
+            INFINITY
+        } else {
+            1. / mass
+        };
+
         GameObject {
             shape,
             position,
@@ -34,14 +43,7 @@ impl GameObject {
             acceleration: Vector3::new(0., 0., 0.),
             force_accum: Vector3::new(0., 0., 0.),
             color,
-            inverse_mass: if mass == INFINITY {
-                0.
-            } else if mass == 0. {
-                //How should mass= 0 be handled?
-                INFINITY
-            } else {
-                1. / mass
-            },
+            inverse_mass: inv_mass,
             bounciness,
             friction,
         }
@@ -102,7 +104,7 @@ impl GameObject {
         if self.inverse_mass != 0. {
             return 1. / self.inverse_mass;
         }
-        return INFINITY;
+        return 0.;
     }
 
     ///The Object's coefficient of bounciness

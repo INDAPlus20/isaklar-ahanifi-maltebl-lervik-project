@@ -6,6 +6,10 @@ use std::cmp::min;
 
 pub mod game_object;
 mod tests;
+
+// For gravity!!!
+const g: f32 = 9.82;
+
 pub struct PhysicsScene {
     objects: Vec<GameObject>,
 }
@@ -50,7 +54,7 @@ impl PhysicsScene {
                 self.objects[index.0].velocity -= manifold.normal.scale(impulse1) + friction1;
 
                 // Change velocity of object_2:
-                self.objects[index.1].velocity -= manifold.normal.scale(impulse2) + friction2;
+                self.objects[index.1].velocity += manifold.normal.scale(impulse2) + friction2;
             }
         }
 
@@ -102,7 +106,13 @@ impl PhysicsScene {
 
     /// Updates the positions according to their linear velocity, with timestep `DURATION` declared in shapes/mod.rs
     fn update_positions(&mut self, time_step: f32) {
+        let gravity: Vector3<f32> = Vector3::new(0., -g, 0.); // would declare as constant Vector3 but our nalgebra is too outdated for that atm
         for object in &mut self.objects {
+            // If object is immovable, aka object has infinite mass, then don't apply gravity (as it would be an infinite force)
+            if object.inv_mass() > f32::EPSILON {
+                object.add_force(gravity * object.mass());
+            }
+            // Integrate one time step
             object.integrate(time_step);
         }
     }
