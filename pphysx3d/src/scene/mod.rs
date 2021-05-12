@@ -48,7 +48,7 @@ impl PhysicsScene {
                 self.objects[index.0].velocity -= manifold.normal.scale(impulse1) + friction1;
 
                 // Change velocity of object_2:
-                self.objects[index.1].velocity -= manifold.normal.scale(impulse2) + friction2;
+                self.objects[index.1].velocity += manifold.normal.scale(impulse2) + friction2;
             }
         }
 
