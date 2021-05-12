@@ -1,6 +1,6 @@
 use kiss3d::nalgebra::{Isometry3, Point3, Unit, UnitVector3, Vector3};
 
-use crate::shapes::{bounding_volume::BoundingVolume, plane::Plane, sphere::Sphere, GameObject};
+use crate::shapes::{plane::Plane, sphere::Sphere};
 
 mod tests;
 
@@ -12,7 +12,7 @@ fn sphere_sphere(
     iso_b: &Isometry3<f32>,
 ) -> bool {
     // Check if sum of radiuses >= distance
-    let diff: Vector3<f32> = (iso_a.translation.vector - iso_b.translation.vector);
+    let diff: Vector3<f32> = iso_a.translation.vector - iso_b.translation.vector;
     let squared_distance: f32 = diff.norm_squared();
     let radiuses = sphere_a.radius + sphere_b.radius;
 

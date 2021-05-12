@@ -1,8 +1,10 @@
 use crate::collision::*;
-use crate::shapes::{bounding_volume::BoundingVolume, GameObject};
+use crate::shapes::bounding_volume::BoundingVolume;
+use game_object::GameObject;
 use kiss3d::nalgebra::{Translation, Unit, Vector3};
 use std::cmp::min;
 
+pub mod game_object;
 mod tests;
 
 // For gravity!!!
@@ -69,13 +71,13 @@ impl PhysicsScene {
         let object_1 = &self.objects[index_1];
         let object_2 = &self.objects[index_2];
         // Mass for respective object
-        let invmass_1 = object_1.inverse_mass;
-        let invmass_2 = object_2.inverse_mass;
+        let invmass_1 = object_1.inv_mass();
+        let invmass_2 = object_2.inv_mass();
         // Relative velocity
         let v_r = object_1.velocity - object_2.velocity;
         // COLLISION:
         // Coefficient of resitution (e), use smallest BOUNCINESS for the objects
-        let e = object_1.bounciness.min(object_2.bounciness);
+        let e = object_1.bounciness().min(object_2.bounciness());
         // Magnitude of impulse used to calculate new velocities
         // This may look like possible division by zero if inverse_mass = 0 for both objects. However, that'd mean they're both immovable which means they can't collide. Could also be added as an extra check in broad_phase just to be sure.
         let impulse_magnitude = -(1. + e) * (v_r.dot(manifold_normal)) / (invmass_1 + invmass_2);
@@ -85,7 +87,7 @@ impl PhysicsScene {
         // Magnitude of friction
         let mut friction_magnitude =
             -(1. + e) * (v_r.dot(&tangent_vector)) / (invmass_1 + invmass_2);
-        let friction = (object_1.friction * object_2.friction).sqrt();
+        let friction = (object_1.friction() * object_2.friction()).sqrt();
         friction_magnitude = friction_magnitude
             .max(-impulse_magnitude * friction)
             .min(impulse_magnitude * friction);
@@ -107,7 +109,7 @@ impl PhysicsScene {
         let gravity: Vector3<f32> = Vector3::new(0., -g, 0.); // would declare as constant Vector3 but our nalgebra is too outdated for that atm
         for object in &mut self.objects {
             // If object is immovable, aka object has infinite mass, then don't apply gravity (as it would be an infinite force)
-            if object.inverse_mass != 0. {
+            if object.inv_mass() > f32::EPSILON {
                 object.add_force(gravity * object.mass());
             }
             // Integrate one time step
@@ -127,9 +129,9 @@ fn broad_phase(objects: &Vec<GameObject>) -> Vec<(usize, usize)> {
             let test = &objects[test_i];
             if current_i != test_i
                 && current
-                    .shape
+                    .shape()
                     .compute_aabb(&current.position)
-                    .interects(&test.shape.compute_aabb(&current.position))
+                    .interects(&test.shape().compute_aabb(&current.position))
             {
                 collisions.push((current_i, test_i));
             }
@@ -150,7 +152,7 @@ pub fn narrow_phase(
         let obj_1 = &objects[*obj_1];
         let obj_2 = &objects[*obj_2];
         // pattern-match the specific collision
-        if let (Ok(sph_1), Ok(sph_2)) = (obj_1.shape.as_sphere(), obj_2.shape.as_sphere()) {
+        if let (Ok(sph_1), Ok(sph_2)) = (obj_1.shape().as_sphere(), obj_2.shape().as_sphere()) {
             let manifold =
                 CollisionManifold::sphere_sphere(&sph_1, &sph_2, &obj_1.position, &obj_2.position);
             manifolds.push(manifold);

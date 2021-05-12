@@ -6,7 +6,7 @@ use kiss3d::{
     window::Window,
 };
 
-use crate::shapes::{shape::Shape, GameObject};
+use crate::{scene::game_object::GameObject, shapes::shape::Shape};
 
 mod tests;
 
@@ -128,8 +128,9 @@ impl Renderer for Kiss3dRenderer {
 
     /// Add a rendered SceneNode to the renderer
     fn add_obj(&mut self, object: &GameObject) -> Result<(), String> {
-        let mut new_node = self.node_from_shape(object.shape.as_ref());
-        new_node.set_color(1.0, 0.0, 0.0);
+        let mut new_node = self.node_from_shape(object.shape());
+        let [r, g, b] = object.color();
+        new_node.set_color(r as f32 / 255., g as f32 / 255., b as f32 / 255.);
         self.renderables.push(new_node);
         Ok(())
     }
