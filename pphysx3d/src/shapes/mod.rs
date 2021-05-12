@@ -60,8 +60,7 @@ impl GameObject {
     pub fn integrate(&mut self, dt: f32) {
         // Update linear position
         //self.position.translation = self.position.translation.one() * Translation::from(DURATION * self.velocity);
-        self.position.translation =
-            Translation::from(self.position.translation.vector + dt * self.velocity);
+        self.position.translation.vector += dt * self.velocity;
 
         // Calculate acceleration from force
         self.acceleration += self.inverse_mass * self.force_accum;
