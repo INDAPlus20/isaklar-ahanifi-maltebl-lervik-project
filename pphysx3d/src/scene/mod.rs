@@ -102,9 +102,11 @@ impl PhysicsScene {
     fn update_positions(&mut self, time_step: f32) {
         let gravity: Vector3<f32> = Vector3::new(0., -10., 0.); // g = 10 for now
         for object in &mut self.objects {
+            // If object is immovable, aka object has infinite mass, then don't apply gravity (as it would be an infinite force)
             if object.inverse_mass != 0. {
                 object.add_force(gravity * object.mass());
             }
+            // Integrate one time step
             object.integrate(time_step);
         }
     }
