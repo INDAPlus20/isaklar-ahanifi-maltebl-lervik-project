@@ -5,24 +5,31 @@ use crate::shapes::shape::Shape;
 pub const INFINITY: f32 = f32::INFINITY;
 
 pub struct GameObject {
-    shape: Box<dyn Shape>,        // The collider
-    pub position: Isometry3<f32>, // includes a translation vector and a rotation part as an unit quaternion
-    pub velocity: Vector3<f32>,
-    pub acceleration: Vector3<f32>,
-    force_accum: Vector3<f32>,
-    color: [u8; 3], //RGB values for the object's default colour (overwritten if texture exists)
+    shape: Box<dyn Shape>, // The collider
     //texture:
-    inverse_mass: f32,
+    color: [u8; 3], //RGB values for the object's default colour (overwritten if texture exists)
+    inverse_mass: f32, // [1/kg]
     bounciness: f32, // elasticity aka coefficient of restitution
-    friction: f32,   // coefficient of friction
+    friction: f32,  // coefficient of friction
+    // Regular momentum stuff:
+    pub position: Isometry3<f32>, // includes a translation vector and a rotation part as an unit quaternion
+    pub velocity: Vector3<f32>,   // [m/s]
+    pub acceleration: Vector3<f32>, // [m/s^2]
+    force_accum: Vector3<f32>,    // Forces summed a la d'Alembert's principle [N]
+    // Angular momentum stuff:
+    // Orientation is stored in the unit quaternion of position
+    //pub orientation: Vector3<f32>, // Object's orientation in the room, angular equivalent to position
+    pub angular_velocity: Vector3<f32>, // Angular velocity [rad/s]
+    pub angular_acceleration: Vector3<f32>, // Angular acceleration [rad/s^2]
+    pub torque_accum: Vector3<f32>, // Torque summed, same principle as force_accum [Nm]
 }
 
 impl GameObject {
     pub fn new(
         shape: Box<dyn Shape>,
+        color: [u8; 3],
         position: Isometry3<f32>,
         velocity: [f32; 3],
-        color: [u8; 3],
         mass: f32,
         bounciness: f32,
         friction: f32,
@@ -38,14 +45,17 @@ impl GameObject {
 
         GameObject {
             shape,
-            position,
-            velocity: Vector3::from(velocity),
-            acceleration: Vector3::new(0., 0., 0.),
-            force_accum: Vector3::new(0., 0., 0.),
             color,
             inverse_mass: inv_mass,
             bounciness,
             friction,
+            position,
+            velocity: Vector3::from(velocity),
+            acceleration: Vector3::new(0., 0., 0.),
+            force_accum: Vector3::new(0., 0., 0.),
+            angular_velocity: Vector3::new(0., 0., 0.),
+            angular_acceleration: Vector3::new(0., 0., 0.),
+            torque_accum: Vector3::new(0., 0., 0.),
         }
     }
 
