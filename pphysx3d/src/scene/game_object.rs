@@ -1,4 +1,4 @@
-use kiss3d::nalgebra::{Isometry3, Translation, Vector3};
+use kiss3d::nalgebra::{Isometry3, Translation, Vector3, Matrix3};
 
 use crate::shapes::shape::Shape;
 
@@ -58,6 +58,41 @@ impl GameObject {
             angular_acceleration: Vector3::new(0., 0., 0.),
             torque_accum: Vector3::new(0., 0., 0.),
         }
+    }
+
+    // Only works for simple shapes atm. Will need to incorporate Steiner and stuff if we want inertia tensors for composite bodies
+    // May need to be slightly different from real world inerta tensors to feel realistic in a physics engine
+    pub fn inv_tensor(&self) -> Matrix3<f32> {
+        // An object's inertia tensor is defined by its geometric properties
+        let mut inv_tensor: Matrix3<f32> = Matrix3::<f32>::zeros();
+        let inv_mass = &self.inverse_mass;
+
+        if let Ok(_sphere) = &self.shape.as_sphere() {
+            let radius = &self.shape.as_sphere().unwrap().radius;
+            // RADIUS CAN'T BE 0
+            let diagonal: Vector3<f32> = Vector3::new(
+                2.5 * inv_mass / (radius * radius),
+                2.5 * inv_mass / (radius * radius),
+                2.5 * inv_mass / (radius * radius),
+            );
+            inv_tensor.set_diagonal(&diagonal);
+        }
+
+        if let Ok(_cube) = &self.shape.as_cube() {
+            let half_extents = &self.shape.as_cube().unwrap().half_extents;
+            // HALF EXTENTS CAN'T BE 0
+            let diagonal: Vector3<f32> = Vector3::new(
+                12. * inv_mass
+                    / (half_extents.y * half_extents.y + half_extents.z * half_extents.z),
+                12. * inv_mass
+                    / (half_extents.x * half_extents.x + half_extents.z * half_extents.z),
+                12. * inv_mass
+                    / (half_extents.x * half_extents.x + half_extents.y * half_extents.y),
+            );
+            inv_tensor.set_diagonal(&diagonal);
+        }
+
+        return inv_tensor;
     }
 
     ///The Object's shape
