@@ -1,4 +1,4 @@
-use kiss3d::nalgebra::{Isometry3, Translation, Vector3, Matrix3, UnitQuaternion};
+use kiss3d::nalgebra::{Isometry3, Matrix3, Translation, UnitQuaternion, Vector3};
 
 use crate::shapes::shape::Shape;
 
@@ -21,7 +21,7 @@ pub struct GameObject {
     //pub orientation: Vector3<f32>, // Object's orientation in the room, angular equivalent to position
     pub angular_velocity: Vector3<f32>, // Angular velocity [rad/s]
     pub angular_acceleration: Vector3<f32>, // Angular acceleration [rad/s^2]
-    pub torque_accum: Vector3<f32>, // Torque summed, same principle as force_accum [Nm]
+    pub torque_accum: Vector3<f32>,     // Torque summed, same principle as force_accum [Nm]
 }
 
 impl GameObject {
@@ -130,9 +130,10 @@ impl GameObject {
         //self.position.translation = self.position.translation.one() * Translation::from(DURATION * self.velocity);
         self.position.translation =
             Translation::from(self.position.translation.vector + dt * self.velocity);
-        
+
         // I'm so confused over how these work, maybe this is completely wrong:
-        self.position.rotation = self.position.rotation * UnitQuaternion::new(0.5*dt*self.angular_velocity);
+        self.position.rotation =
+            self.position.rotation * UnitQuaternion::new(0.5 * dt * self.angular_velocity);
 
         // Calculate acceleration from force
         self.acceleration += self.inverse_mass * self.force_accum;
