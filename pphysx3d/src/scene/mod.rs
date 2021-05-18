@@ -80,7 +80,7 @@ impl PhysicsScene {
                     // Change velocity of object_2:
                     self.objects[index.1].velocity +=
                         (manifold.normal.scale(impulse2) + friction2) / contacts;
-                    self.objects[index.1].angular_velocity -= inv_tensor_2
+                    self.objects[index.1].angular_velocity += inv_tensor_2
                         * relative_vector_2.cross(&manifold.normal.scale(impulse2))
                         / contacts;
                 }
