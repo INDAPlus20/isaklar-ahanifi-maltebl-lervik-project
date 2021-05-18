@@ -1,4 +1,4 @@
-use kiss3d::nalgebra::{Isometry3, Translation, Vector3, Matrix3};
+use kiss3d::nalgebra::{Isometry3, Translation, Vector3, Matrix3, UnitQuaternion};
 
 use crate::shapes::shape::Shape;
 
@@ -60,6 +60,13 @@ impl GameObject {
         }
     }
 
+    pub fn add_rotational_impulse(&mut self, contact_point: Vector3<f32>, impulse: Vector3<f32>) {
+        let center_of_mass = &self.position.translation;
+        let torque: Vector3<f32> = (contact_point - center_of_mass.vector).cross(&impulse);
+        let angular_acceleration = &self.inv_tensor() * torque;
+        self.angular_velocity += angular_acceleration; // NOT SURE IF THIS IS NECESSARY
+    }
+
     // Only works for simple shapes atm. Will need to incorporate Steiner and stuff if we want inertia tensors for composite bodies
     // May need to be slightly different from real world inerta tensors to feel realistic in a physics engine
     pub fn inv_tensor(&self) -> Matrix3<f32> {
@@ -114,6 +121,7 @@ impl GameObject {
     fn clear_accum(&mut self) {
         // maybe don't have to create a new Vector3 idk yet
         self.force_accum = Vector3::new(0., 0., 0.);
+        self.torque_accum = Vector3::new(0., 0., 0.);
     }
 
     // Pretty much just Explicit Euler, might want to change to something like Verlet
@@ -122,12 +130,17 @@ impl GameObject {
         //self.position.translation = self.position.translation.one() * Translation::from(DURATION * self.velocity);
         self.position.translation =
             Translation::from(self.position.translation.vector + dt * self.velocity);
+        
+        // I'm so confused over how these work, maybe this is completely wrong:
+        self.position.rotation = self.position.rotation * UnitQuaternion::new(0.5*dt*self.angular_velocity);
 
         // Calculate acceleration from force
         self.acceleration += self.inverse_mass * self.force_accum;
+        self.angular_acceleration += self.inv_tensor() * self.torque_accum;
 
         // Calculate new velocity
         self.velocity += dt * self.acceleration;
+        self.angular_velocity += dt * self.angular_acceleration;
 
         // (NOT SURE IF HAVE TO MAKE NEW ZERO VECTOR)
         self.clear_accum();
