@@ -22,9 +22,9 @@ fn kiss3d_rendering() {
     let transform_1 = Isometry3::translation(0.0, 0.0, 1.5);
     let object_1 = GameObject::new(
         sphere_1,
+        [255, 0, 0],
         transform_1,
         [0.01, 0.0, 0.0],
-        [255, 0, 0],
         0.1,
         0.1,
         0.2,
@@ -36,9 +36,9 @@ fn kiss3d_rendering() {
     let transform_2 = Isometry3::translation(1.0, 0.0, 1.0);
     let object_2 = GameObject::new(
         sphere_2,
+        [100, 200, 0],
         transform_2,
         [0.0, 0.0, 0.0],
-        [100, 200, 0],
         0.1,
         0.1,
         0.2,
@@ -50,9 +50,9 @@ fn kiss3d_rendering() {
     let transform_3 = Isometry3::translation(-1.0, 0.0, 1.2);
     let object_3 = GameObject::new(
         cube_1,
+        [0, 0, 0],
         transform_3,
         [0.0, 0.0, 0.0],
-        [0, 0, 0],
         INFINITY,
         0.1,
         0.2,
@@ -64,9 +64,9 @@ fn kiss3d_rendering() {
     let transform_4 = Isometry3::translation(0.0, -1.0, 0.0);
     let object_4 = GameObject::new(
         plane_1,
+        [255, 255, 255],
         transform_4,
         [0.0, 0.0, 0.0],
-        [255, 255, 255],
         INFINITY,
         0.0,
         0.0,

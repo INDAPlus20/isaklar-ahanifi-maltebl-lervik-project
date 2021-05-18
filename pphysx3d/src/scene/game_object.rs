@@ -37,7 +37,8 @@ impl GameObject {
         let inv_mass = if mass >= INFINITY - f32::EPSILON {
             0.
         } else if mass <= f32::EPSILON {
-            //How should mass= 0 be handled?
+            // How should mass = 0 be handled?
+            // - It shouldn't be a thing
             INFINITY
         } else {
             1. / mass
