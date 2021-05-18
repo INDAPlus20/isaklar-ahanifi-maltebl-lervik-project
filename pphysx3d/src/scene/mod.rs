@@ -46,15 +46,30 @@ impl PhysicsScene {
             if manifold.colliding {
                 //&self.objects[i].add_force(Vector3::new(0., 0., 0.)); // this would be how to add new forces but we don't do that right here
                 let index = &collision_pairs[i];
-                let manifold_normal = &manifold.normal;
-                let [(impulse1, friction1), (impulse2, friction2)] =
-                    self.calculate_impulse(index.0, index.1, manifold_normal);
+                let contacts = manifold.contacts.len() as f32;
 
-                // Change velocity of object_1:
-                self.objects[index.0].velocity += manifold.normal.scale(impulse1) + friction1;
+                // Calculate impulse for every contact point in collision
+                for (_, contact) in manifold.contacts.iter().enumerate() {
 
-                // Change velocity of object_2:
-                self.objects[index.1].velocity -= manifold.normal.scale(impulse2) + friction2;
+                    let manifold_normal = &manifold.normal;
+
+                    // Relative position from center of mass to contact point for respective object
+                    let relative_vector_1: Vector3<f32> =
+                        contact.coords - self.objects[index.0].position.translation.vector;
+                    let relative_vector_2: Vector3<f32> =
+                        contact.coords - self.objects[index.1].position.translation.vector;
+
+                    let [(impulse1, friction1), (impulse2, friction2)] =
+                    // self.calculate_impulse(index.0, index.1, &manifold);
+                    self.calculate_impulse(index.0, index.1, manifold_normal, &relative_vector_1, &relative_vector_2);
+
+                    // Change velocity of object_1:
+                    self.objects[index.0].velocity -= (manifold.normal.scale(impulse1) + friction1) / contacts;
+                    //self.objects[index.0].angular_velocity -= self.objects[index.0].inv_tensor() * relative_vector_1.cross(manifold.normal.scale(impulse1));
+
+                    // Change velocity of object_2:
+                    self.objects[index.1].velocity += (manifold.normal.scale(impulse2) + friction2) / contacts;
+                }
             }
         }
 
@@ -67,26 +82,46 @@ impl PhysicsScene {
         index_1: usize,
         index_2: usize,
         manifold_normal: &Unit<Vector3<f32>>,
+        r_1: &Vector3<f32>, // relative vectors
+        r_2: &Vector3<f32>,
+        //manifold: &CollisionManifold,
     ) -> [(f32, Vector3<f32>); 2] {
         let object_1 = &self.objects[index_1];
         let object_2 = &self.objects[index_2];
+        //let manifold_normal = &manifold.normal;
         // Mass for respective object
         let invmass_1 = object_1.inv_mass();
         let invmass_2 = object_2.inv_mass();
+        // Inverse inertia tensor for respective object
+        let inv_tensor_1 = object_1.inv_tensor();
+        let inv_tensor_2 = object_2.inv_tensor();
+        // Take rotational velocity into account: see v_r
         // Relative velocity
-        let v_r = object_1.velocity - object_2.velocity;
+        let v_r = (object_2.velocity + object_2.angular_velocity.cross(r_2))
+            - (object_1.velocity + object_1.angular_velocity.cross(r_1));
         // COLLISION:
         // Coefficient of resitution (e), use smallest BOUNCINESS for the objects
         let e = object_1.bounciness().min(object_2.bounciness());
         // Magnitude of impulse used to calculate new velocities
-        // This may look like possible division by zero if inverse_mass = 0 for both objects. However, that'd mean they're both immovable which means they can't collide. Could also be added as an extra check in broad_phase just to be sure.
-        let impulse_magnitude = -(1. + e) * (v_r.dot(manifold_normal)) / (invmass_1 + invmass_2);
+        // Some of these multiplications may look like possible division by zero if inverse_mass = 0 for both objects. However, that'd mean they're both immovable which means they can't collide. Could also be added as an extra check in broad_phase just to be sure.
+
+        // Helper scalars: 
+        // Named d# because they're parts of the denominators
+        let d1: Vector3<f32> = (inv_tensor_1 * (r_1.cross(manifold_normal))).cross(r_1);
+        let d2: Vector3<f32> = (inv_tensor_2 * (r_2.cross(manifold_normal))).cross(r_2);
+
+        let impulse_magnitude = -(1. + e) * (v_r.dot(manifold_normal))
+            / (invmass_1 + invmass_2 + manifold_normal.dot(&d1) + manifold_normal.dot(&d2));
         // FRICTION:
         // Tangent vector for the collision
         let tangent_vector = v_r - manifold_normal.scale(v_r.dot(manifold_normal));
+
+        // More helper scalars: 
+        let d3: Vector3<f32> = (inv_tensor_1 * (r_1.cross(&tangent_vector))).cross(r_1);
+        let d4: Vector3<f32> = (inv_tensor_2 * (r_2.cross(&tangent_vector))).cross(r_2);
         // Magnitude of friction
         let mut friction_magnitude =
-            -(1. + e) * (v_r.dot(&tangent_vector)) / (invmass_1 + invmass_2);
+            -(1. + e) * (v_r.dot(&tangent_vector)) / (invmass_1 + invmass_2 + manifold_normal.dot(&d3) + manifold_normal.dot(&d4));
         let friction = (object_1.friction() * object_2.friction()).sqrt();
         friction_magnitude = friction_magnitude
             .max(-impulse_magnitude * friction)
