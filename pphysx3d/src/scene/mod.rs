@@ -155,7 +155,7 @@ impl PhysicsScene {
         for object in &mut self.objects {
             // If object is immovable, aka object has infinite mass, then don't apply gravity (as it would be an infinite force)
             if object.inv_mass() > f32::EPSILON {
-                object.add_force(gravity * object.mass());
+                object.add_force(time_step * gravity * object.mass());
             }
             // Integrate one time step
             object.integrate(time_step);
@@ -196,7 +196,7 @@ pub fn narrow_phase(
     for (obj_1, obj_2) in pairs {
         let obj_1 = &objects[*obj_1];
         let obj_2 = &objects[*obj_2];
-        if obj_1.velocity.dot(&obj_2.velocity) <= 0.0 {
+        if obj_1.velocity.dot(&obj_2.velocity) > 0.0 {
             manifolds.push(CollisionManifold::new());
             continue;
         }
