@@ -18,18 +18,18 @@ fn update_position_test() {
     );
     let object_1 = GameObject::new(
         sphere_1,
+        [100, 200, 0],
         iso_1,
         [1.0, 0.0, 0.0],
-        [100, 200, 0],
         10.,
         0.1,
         0.2,
     );
     let object_2 = GameObject::new(
         sphere_2,
+        [100, 200, 0],
         iso_2,
         [0.0, 0.0, 1.0],
-        [100, 200, 0],
         10.,
         0.1,
         0.2,
@@ -59,18 +59,18 @@ fn broad_phase_collision() {
     let transform_2 = Isometry3::translation(1.99f32, 1.99f32, 0f32);
     let object_1 = GameObject::new(
         sphere_1,
+        [100, 200, 0],
         transform_1,
         [0.0, 0.0, 0.0],
-        [100, 200, 0],
         10.,
         0.1,
         0.2,
     );
     let object_2 = GameObject::new(
         sphere_2,
+        [100, 200, 0],
         transform_2,
         [0.0, 0.0, 0.0],
-        [100, 200, 0],
         10.,
         0.1,
         0.2,
@@ -84,30 +84,30 @@ fn broad_phase_collision() {
 
 #[test]
 fn narrow_phase_collision() {
-    let sphere_1 = Box::new(Sphere::new(2.0f32));
-    let sphere_2 = Box::new(Sphere::new(2.0f32));
+    let sphere_1 = Box::new(Sphere::new(2f32));
+    let sphere_2 = Box::new(Sphere::new(2f32));
     let iso_1 = Isometry3::from_parts(
         Translation3::new(0f32, 0f32, 0f32),
         UnitQuaternion::new(Vector3::y() * std::f32::consts::FRAC_PI_2),
     );
     let iso_2 = Isometry3::from_parts(
-        Translation3::new(0f32, 3f32, 0f32),
+        Translation3::new(3f32, 0f32, 0f32),
         UnitQuaternion::new(Vector3::y() * std::f32::consts::FRAC_PI_2),
     );
     let object_1 = GameObject::new(
         sphere_1,
-        iso_1,
-        [0.0, 0.0, 0.0],
         [100, 200, 0],
+        iso_1,
+        [10.0, 0.0, 0.0],
         10.,
         0.1,
         0.2,
     );
     let object_2 = GameObject::new(
         sphere_2,
+        [200, 100, 0],
         iso_2,
-        [0.0, 0.0, 0.0],
-        [100, 200, 0],
+        [-10.0, 0.0, 0.0],
         10.,
         0.1,
         0.2,
@@ -119,9 +119,9 @@ fn narrow_phase_collision() {
     let manifolds = narrow_phase(&objects, &collisions);
     let check = CollisionManifold {
         colliding: true,
-        depth: 0.5f32,
-        normal: UnitVector3::new_normalize(Vector3::new(0f32, 1f32, 0f32)),
-        contacts: vec![Point3::new(0f32, 1.5f32, 0f32)],
+        depth: 1f32,
+        normal: UnitVector3::new_normalize(Vector3::new(1f32, 0f32, 0f32)),
+        contacts: vec![Point3::new(0f32, 0f32, 0f32)],
     };
     assert_eq!(manifolds[0], check)
 }

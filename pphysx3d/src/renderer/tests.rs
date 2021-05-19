@@ -22,54 +22,51 @@ fn kiss3d_rendering() {
     let transform_1 = Isometry3::translation(0.0, 0.0, 1.5);
     let object_1 = GameObject::new(
         sphere_1,
+        [255, 0, 0],
         transform_1,
         [0.01, 0.0, 0.0],
-        [255, 0, 0],
         0.1,
         0.1,
         0.2,
     );
     renderer.add_obj(&object_1).unwrap();
     scene.add(object_1);
-    
 
     let sphere_2 = Box::new(Sphere::new(0.2));
     let transform_2 = Isometry3::translation(1.0, 0.0, 1.0);
     let object_2 = GameObject::new(
         sphere_2,
+        [100, 200, 0],
         transform_2,
         [0.0, 0.0, 0.0],
-        [100, 200, 0],
         0.1,
         0.1,
         0.2,
     );
     renderer.add_obj(&object_2).unwrap();
     scene.add(object_2);
-    
 
     let cube_1 = Box::new(Cube::new(Vector3::new(0.5, 1.0, 1.0)));
     let transform_3 = Isometry3::translation(-1.0, 0.0, 1.2);
     let object_3 = GameObject::new(
         cube_1,
+        [0, 0, 0],
         transform_3,
         [0.0, 0.0, 0.0],
-        [0, 0, 0],
         INFINITY,
         0.1,
         0.2,
     );
     renderer.add_obj(&object_3).unwrap();
     scene.add(object_3);
-    
 
     let plane_1 = Box::new(Plane::new(Unit::new_normalize(Vector3::new(0., 1., 0.))));
     let transform_4 = Isometry3::translation(0.0, -1.0, 0.0);
     let object_4 = GameObject::new(
         plane_1,
+        [255, 255, 255],
         transform_4,
         [0.0, 0.0, 0.0],
-        [255, 255, 255],
         INFINITY,
         0.0,
         0.0,
@@ -77,7 +74,7 @@ fn kiss3d_rendering() {
 
     renderer.add_obj(&object_4).unwrap();
     scene.add(object_4);
-    
+
     renderer.change_camera_speed(0.01);
     renderer.set_background(0.5, 0.5, 0.5);
     renderer.set_point_light_source(Point3::new(0.0, 5.0, 2.0));
