@@ -119,9 +119,9 @@ fn narrow_phase_collision() {
     let manifolds = narrow_phase(&objects, &collisions);
     let check = CollisionManifold {
         colliding: true,
-        depth: 1f32,
+        depth: 0.5f32,
         normal: UnitVector3::new_normalize(Vector3::new(1f32, 0f32, 0f32)),
-        contacts: vec![Point3::new(0f32, 0f32, 0f32)],
+        contacts: vec![Point3::new(1.5f32, 0f32, 0f32)],
     };
     assert_eq!(manifolds[0], check)
 }

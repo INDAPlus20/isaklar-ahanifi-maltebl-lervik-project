@@ -80,7 +80,7 @@ impl CollisionManifold {
         }
 
         manifold.colliding = true;
-        manifold.normal = UnitVector3::new_normalize(distance);
+        manifold.normal = UnitVector3::new_normalize(distance.scale(-1.));
         manifold.depth = ((distance.norm() - radiuses) / 2.0f32).abs();
         let point_dist = sphere_a.radius - manifold.depth; // distance to contact point
         let contact_point: Point3<f32> =
@@ -99,7 +99,7 @@ impl CollisionManifold {
         let mut manifold = CollisionManifold::new();
 
         // project the distance between the sphere center and plane center onto the plane normal
-        let normal: UnitVector3<f32> = iso_s.rotation * plane.normal();
+        let normal: UnitVector3<f32> = iso_p.rotation * plane.normal();
         let dist_to_center = iso_p.translation.vector - iso_s.translation.vector;
         let proj: Vector3<f32> = normal.scale(normal.dot(&dist_to_center));
         let dist_squared = proj.norm_squared();
@@ -115,7 +115,7 @@ impl CollisionManifold {
         manifold.depth = sphere.radius - normal.dot(&dist_to_center);
         let contact_point: Point3<f32> = Point3::from(iso_s.translation.vector + proj);
         manifold.contacts = vec![contact_point];
-        manifold.normal = UnitVector3::new_normalize(proj);
+        manifold.normal = normal;
 
         return manifold;
     }
