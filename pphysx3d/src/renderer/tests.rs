@@ -24,7 +24,7 @@ fn kiss3d_rendering() {
         sphere_1,
         [255, 0, 0],
         transform_1,
-        [0.01, 0.0, 0.0],
+        [10.0, 1.0, 0.0],
         0.1,
         0.1,
         0.2,
@@ -54,14 +54,14 @@ fn kiss3d_rendering() {
         transform_3,
         [0.0, 0.0, 0.0],
         INFINITY,
-        0.1,
+        1.0,
         0.2,
     );
     renderer.add_obj(&object_3).unwrap();
     scene.add(object_3);
 
     let plane_1 = Box::new(Plane::new(Unit::new_normalize(Vector3::new(0., 1., 0.))));
-    let transform_4 = Isometry3::translation(0.0, -1.0, 0.0);
+    let transform_4 = Isometry3::translation(0.0, -2.0, 0.0);
     let object_4 = GameObject::new(
         plane_1,
         [255, 255, 255],
