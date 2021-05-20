@@ -80,7 +80,7 @@ impl CollisionManifold {
         }
 
         manifold.colliding = true;
-        manifold.normal = UnitVector3::new_normalize(distance);
+        manifold.normal = UnitVector3::new_normalize(distance.scale(-1.));
         manifold.depth = ((distance.norm() - radiuses) / 2.0f32).abs();
         let point_dist = sphere_a.radius - manifold.depth; // distance to contact point
         let contact_point: Point3<f32> =

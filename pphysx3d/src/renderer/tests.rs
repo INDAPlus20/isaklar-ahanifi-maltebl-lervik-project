@@ -79,7 +79,7 @@ fn kiss3d_rendering() {
     renderer.set_background(0.5, 0.5, 0.5);
     renderer.set_point_light_source(Point3::new(0.0, 5.0, 2.0));
     loop {
-        scene.update(0.0001);
+        scene.update(0.01);
         renderer.draw(&scene.objects()).unwrap();
     }
 }
@@ -91,18 +91,32 @@ fn sphere_fall_into_plane() {
     let mut scene = PhysicsScene::new();
 
     let sphere_1 = Box::new(Sphere::new(0.4));
-    let transform_1 = Isometry3::translation(0.0, 0.0, 1.5);
+    let transform_1 = Isometry3::translation(1.0, 2.0, 10.);
     let object_1 = GameObject::new(
         sphere_1,
-        [255, 0, 0],
+        [0, 0, 0],
         transform_1,
-        [0.01, 0.0, 0.0],
-        0.1,
-        0.1,
-        0.2,
+        [0.0, 0.0, 0.0],
+        10.,
+        1.0,
+        0.01,
     );
     renderer.add_obj(&object_1).unwrap();
     scene.add(object_1);
+
+    let sphere_2 = Box::new(Sphere::new(0.4));
+    let transform_2 = Isometry3::translation(0.0, 10.0, 10.);
+    let object_2 = GameObject::new(
+        sphere_2,
+        [255, 0, 0],
+        transform_2,
+        [1.0, -10.0, 0.0],
+        10.,
+        1.0,
+        0.01,
+    );
+    renderer.add_obj(&object_2).unwrap();
+    scene.add(object_2);
 
     let plane_1 = Box::new(Plane::new(Unit::new_normalize(Vector3::new(0., 1., 0.))));
     let transform_4 = Isometry3::translation(0.0, -1.0, 0.0);
@@ -113,7 +127,7 @@ fn sphere_fall_into_plane() {
         [0.0, 0.0, 0.0],
         INFINITY,
         1.,
-        0.0,
+        0.1,
     );
 
     renderer.add_obj(&object_4).unwrap();
@@ -123,7 +137,7 @@ fn sphere_fall_into_plane() {
     renderer.set_background(0.5, 0.5, 0.5);
     renderer.set_point_light_source(Point3::new(0.0, 5.0, 2.0));
     loop {
-        scene.update(0.01);
+        scene.update(0.007);
 
         renderer.draw(&scene.objects()).unwrap();
     }
