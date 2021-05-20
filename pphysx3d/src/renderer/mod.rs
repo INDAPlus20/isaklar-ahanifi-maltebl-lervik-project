@@ -97,12 +97,12 @@ impl Kiss3dRenderer {
             self.window.add_cube(extents.x, extents.y, extents.z)
         } else if let Ok(plane) = shape.as_plane() {
             let mut g = self.window.add_group();
-            let p = g.add_quad(PLANE_SIZE, PLANE_SIZE, 1, 1);
-            g.append_rotation(
+            let mut p = g.add_quad(PLANE_SIZE, PLANE_SIZE, 1, 1);
+            p.append_rotation(
                 &UnitQuaternion::rotation_between(&Vector3::z(), plane.normal()).unwrap(),
             );
-            g.append_translation(&Translation3::new(0., -1., 0.));
-            p
+            p.append_translation(&Translation3::new(0., -1., 0.));
+            g
         } else {
             panic!()
         }
