@@ -44,8 +44,16 @@ impl Shape for Cube {
     fn compute_bounding_sphere(&self, pos: &Isometry3<f32>) -> BoundingSphere {
         self.bounding_sphere(pos)
     }
-    fn as_sphere(&self) -> Option<&Sphere> {
-        None
+    fn as_sphere(&self) -> Result<&Sphere, ()> {
+        Err(())
+    }
+
+    fn as_cube(&self) -> Result<&Cube, ()> {
+        Ok(&self)
+    }
+
+    fn as_plane(&self) -> Result<&super::plane::Plane, ()> {
+        Err(())
     }
 }
 

@@ -1,5 +1,6 @@
 use super::{
     bounding_volume::BoundingSphere,
+    cube::Cube,
     ray::Ray,
     raycast::{RayCast, RayCastResult},
     shape::Shape,
@@ -40,8 +41,16 @@ impl Shape for Sphere {
         self.bounding_sphere(pos)
     }
 
-    fn as_sphere(&self) -> Option<&Sphere> {
-        Some(self)
+    fn as_sphere(&self) -> Result<&Sphere, ()> {
+        Ok(self)
+    }
+
+    fn as_cube(&self) -> Result<&Cube, ()> {
+        Err(())
+    }
+
+    fn as_plane(&self) -> Result<&super::plane::Plane, ()> {
+        Err(())
     }
 }
 

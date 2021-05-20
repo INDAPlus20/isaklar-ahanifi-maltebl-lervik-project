@@ -2,6 +2,7 @@ use kiss3d::nalgebra::{Isometry3, Point3, UnitVector3, Vector3};
 
 use super::{
     bounding_volume::{BoundingSphere, AABB},
+    cube::Cube,
     ray::Ray,
     raycast::{RayCast, RayCastResult},
     shape::Shape,
@@ -42,8 +43,16 @@ impl Shape for Plane {
         let center: Point3<f32> = Point3::new(0.0, 0.0, 0.0);
         return BoundingSphere::new(f32::MAX / 2.0, center);
     }
-    fn as_sphere(&self) -> Option<&Sphere> {
-        return None;
+    fn as_sphere(&self) -> Result<&Sphere, ()> {
+        return Err(());
+    }
+
+    fn as_cube(&self) -> Result<&Cube, ()> {
+        return Err(());
+    }
+
+    fn as_plane(&self) -> Result<&Plane, ()> {
+        Ok(&self)
     }
 }
 
