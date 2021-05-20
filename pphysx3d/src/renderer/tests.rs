@@ -83,3 +83,48 @@ fn kiss3d_rendering() {
         renderer.draw(&scene.objects()).unwrap();
     }
 }
+
+#[test]
+#[should_panic]
+fn sphere_fall_into_plane() {
+    let mut renderer = Kiss3dRenderer::new("Test_rendering", 1000, 600);
+    let mut scene = PhysicsScene::new();
+
+    let sphere_1 = Box::new(Sphere::new(0.4));
+    let transform_1 = Isometry3::translation(0.0, 0.0, 1.5);
+    let object_1 = GameObject::new(
+        sphere_1,
+        [255, 0, 0],
+        transform_1,
+        [0.01, 0.0, 0.0],
+        0.1,
+        0.1,
+        0.2,
+    );
+    renderer.add_obj(&object_1).unwrap();
+    scene.add(object_1);
+
+    let plane_1 = Box::new(Plane::new(Unit::new_normalize(Vector3::new(0., 1., 0.))));
+    let transform_4 = Isometry3::translation(0.0, -1.0, 0.0);
+    let object_4 = GameObject::new(
+        plane_1,
+        [255, 255, 255],
+        transform_4,
+        [0.0, 0.0, 0.0],
+        INFINITY,
+        1.,
+        0.0,
+    );
+
+    renderer.add_obj(&object_4).unwrap();
+    scene.add(object_4);
+
+    renderer.change_camera_speed(0.01);
+    renderer.set_background(0.5, 0.5, 0.5);
+    renderer.set_point_light_source(Point3::new(0.0, 5.0, 2.0));
+    loop {
+        scene.update(0.01);
+
+        renderer.draw(&scene.objects()).unwrap();
+    }
+}
