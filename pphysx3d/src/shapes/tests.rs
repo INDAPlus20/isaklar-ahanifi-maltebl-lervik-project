@@ -1,5 +1,12 @@
+use std::f32::consts::FRAC_1_PI;
+
 #[cfg(test)]
 use super::bounding_volume::BoundingVolume;
+use super::{
+    plane::Plane,
+    ray::Ray,
+    raycast::{RayCast, RayCastResult},
+};
 #[cfg(test)]
 use crate::shapes::sphere::Sphere;
 
@@ -8,7 +15,10 @@ use crate::shapes::cube::Cube;
 
 #[cfg(test)]
 use kiss3d::nalgebra::{Isometry3, Vector3};
-use kiss3d::ncollide3d::math::Vector;
+use kiss3d::{
+    nalgebra::{Point3, Translation3, UnitQuaternion, UnitVector3},
+    ncollide3d::math::Vector,
+};
 
 #[test]
 fn test_bounding_sphere_around_sphere() {
@@ -114,4 +124,62 @@ fn test_AABB_around_rotated_cube() {
 
     let is_intersecting = cube.aabb(&rotated_pos).interects(&cube.aabb(&pos));
     assert_eq!(false, is_intersecting);
+}
+
+#[test]
+fn sphere_raycast() {
+    // This is a basic-ass test but gimme a break liksom
+    let sphere = Sphere::new(2.0);
+    let position = Isometry3::from_parts(
+        Translation3::new(4f32, 0f32, 0f32),
+        UnitQuaternion::new(Vector3::y() * 0.0),
+    );
+    let origin = Point3::new(0.0, 0.0, 0.0);
+    let direction = UnitVector3::new_normalize(Vector3::new(1.0, 0.0, 0.0));
+    let ray = Ray::new(origin, direction);
+    let result = sphere.ray_cast(&position, &ray);
+    let mut facit = RayCastResult::new();
+    facit.normal = UnitVector3::new_normalize(Vector3::new(-1.0, 0.0, 0.0));
+    facit.contact_point = Point3::new(2.0, 0.0, 0.0);
+    facit.distance = 2.0;
+    facit.hit = true;
+    assert_eq!(facit, result);
+}
+
+#[test]
+fn plane_raycast() {
+    let plane = Plane::new(UnitVector3::new_normalize(Vector3::new(0.0, 1.0, 0.0)));
+    let position = Isometry3::from_parts(
+        Translation3::new(2f32, 0f32, 0f32),
+        UnitQuaternion::new(Vector3::new(0.0, 0.0, 0.0)),
+    );
+    let origin = Point3::new(0.0, 1.0, 0.0);
+    let direction = UnitVector3::new_normalize(Vector3::new(0.0, -1.0, 0.0));
+    let ray = Ray::new(origin, direction);
+    let result = plane.ray_cast(&position, &ray);
+    let mut facit = RayCastResult::new();
+    facit.normal = UnitVector3::new_normalize(Vector3::new(0.0, 1.0, 0.0));
+    facit.contact_point = Point3::new(0.0, 0.0, 0.0);
+    facit.distance = 1.0;
+    facit.hit = true;
+    assert_eq!(facit, result);
+}
+
+#[test]
+fn cube_raycast() {
+    let cube = Cube::new(Vector3::new(1.0, 1.0, 1.0));
+    let position = Isometry3::from_parts(
+        Translation3::new(2f32, 0f32, 0f32),
+        UnitQuaternion::new(Vector3::new(0.0, 0.0, 0.0)),
+    );
+    let origin = Point3::new(0.0, 0.0, 0.0);
+    let direction = UnitVector3::new_normalize(Vector3::new(1.0, 0.0, 0.0));
+    let ray = Ray::new(origin, direction);
+    let result = cube.ray_cast(&position, &ray);
+    let mut facit = RayCastResult::new();
+    facit.normal = UnitVector3::new_normalize(Vector3::new(-1.0, 0.0, 0.0));
+    facit.contact_point = Point3::new(1.0, 0.0, 0.0);
+    facit.distance = 1.0;
+    facit.hit = true;
+    assert_eq!(facit, result);
 }
