@@ -101,7 +101,6 @@ impl Kiss3dRenderer {
             p.append_rotation(
                 &UnitQuaternion::rotation_between(&Vector3::z(), plane.normal()).unwrap(),
             );
-            p.append_translation(&Translation3::new(0., -1., 0.));
             g
         } else {
             panic!()
