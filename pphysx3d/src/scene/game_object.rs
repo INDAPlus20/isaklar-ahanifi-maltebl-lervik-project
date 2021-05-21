@@ -24,7 +24,7 @@ pub struct GameObject {
     //pub orientation: Vector3<f32>, // Object's orientation in the room, angular equivalent to position
     pub angular_velocity: Vector3<f32>, // Angular velocity [rad/s]
     pub angular_acceleration: Vector3<f32>, // Angular acceleration [rad/s^2]
-    torque_accum: Vector3<f32>,         // Torque summed, same principle as force_accum [Nm]
+    pub torque_accum: Vector3<f32>,     // Torque summed, same principle as force_accum [Nm]
 }
 
 impl GameObject {
