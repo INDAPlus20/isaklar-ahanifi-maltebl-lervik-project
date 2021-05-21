@@ -1,5 +1,5 @@
 use kiss3d::{
-    camera::FirstPerson,
+    camera::{Camera, FirstPerson},
     event::Key,
     nalgebra::{Point3, Translation3, UnitQuaternion, Vector3},
     scene::SceneNode,
@@ -53,6 +53,21 @@ impl Kiss3dRenderer {
             renderables: Vec::new(),
         }
     }
+
+    ///Set the position of the camera
+    pub fn camera_position(&mut self, position: [f32; 3]) {
+        self.camera
+            .look_at(Point3::from(position), self.camera.at());
+    }
+
+    ///Set the view direction of the camera
+    pub fn camera_direction(&mut self, direction: [f32; 3]) {
+        self.camera.look_at(
+            self.camera.eye(),
+            self.camera.eye() + Vector3::from(direction),
+        )
+    }
+
     ///Change keybindings and speed of camera
     pub fn set_camera_movement(
         &mut self,
@@ -80,8 +95,9 @@ impl Kiss3dRenderer {
     }
 
     ///Set the one global light source allowed by kiss3d to a point
-    pub fn set_point_light_source(&mut self, point: Point3<f32>) {
-        self.window.set_light(kiss3d::light::Light::Absolute(point));
+    pub fn set_point_light_source(&mut self, point: [f32; 3]) {
+        self.window
+            .set_light(kiss3d::light::Light::Absolute(Point3::from(point)));
     }
     ///Set the one global light source allowed by kiss3d to follow the camera.
     pub fn set_light_to_camera(&mut self) {
