@@ -1,6 +1,8 @@
-use kiss3d::nalgebra::{Isometry3, Matrix3, Translation, UnitQuaternion, Vector3};
+use kiss3d::nalgebra::{
+    Isometry3, Matrix3, Translation, Translation3, UnitQuaternion, UnitVector3, Vector3,
+};
 
-use crate::shapes::shape::Shape;
+use crate::shapes::{cube::Cube, plane::Plane, shape::Shape, sphere::Sphere};
 
 pub const INFINITY: f32 = f32::INFINITY;
 pub const DAMPING: f32 = 0.995;
@@ -22,7 +24,7 @@ pub struct GameObject {
     //pub orientation: Vector3<f32>, // Object's orientation in the room, angular equivalent to position
     pub angular_velocity: Vector3<f32>, // Angular velocity [rad/s]
     pub angular_acceleration: Vector3<f32>, // Angular acceleration [rad/s^2]
-    pub torque_accum: Vector3<f32>,     // Torque summed, same principle as force_accum [Nm]
+    torque_accum: Vector3<f32>,         // Torque summed, same principle as force_accum [Nm]
 }
 
 impl GameObject {
@@ -31,6 +33,7 @@ impl GameObject {
         color: [u8; 3],
         position: Isometry3<f32>,
         velocity: [f32; 3],
+        angular_velocity: [f32; 3],
         mass: f32,
         bounciness: f32,
         friction: f32,
@@ -55,7 +58,7 @@ impl GameObject {
             velocity: Vector3::from(velocity),
             acceleration: Vector3::new(0., 0., 0.),
             force_accum: Vector3::new(0., 0., 0.),
-            angular_velocity: Vector3::new(0., 0., 0.),
+            angular_velocity: Vector3::from(angular_velocity),
             angular_acceleration: Vector3::new(0., 0., 0.),
             torque_accum: Vector3::new(0., 0., 0.),
         }
@@ -118,6 +121,16 @@ impl GameObject {
         self.force_accum = self.force_accum + force;
     }
 
+    ///All accumulated angular forces acting on the Object
+    pub fn torque_accum(&self) -> &Vector3<f32> {
+        &self.torque_accum
+    }
+
+    ///Add an angular force acting on the object to it's torque accumulator
+    pub fn add_angular_force(&mut self, force: Vector3<f32>) {
+        self.torque_accum = self.torque_accum + force;
+    }
+
     ///remove all accumulated forces acting on the Object
     fn clear_accum(&mut self) {
         // maybe don't have to create a new Vector3 idk yet
@@ -172,8 +185,197 @@ impl GameObject {
     pub fn bounciness(&self) -> f32 {
         self.bounciness
     }
+
     ///The Object's coefficient of friction
     pub fn friction(&self) -> f32 {
         self.friction
+    }
+
+    ///Convenience function to add to the object's velocity
+    pub fn add_velocity(&mut self, velocity: [f32; 3]) {
+        self.velocity += Vector3::from(velocity);
+    }
+
+    ///Convenience function to add to the object's acceleration
+    pub fn add_acceleration(&mut self, acceleration: [f32; 3]) {
+        self.acceleration += Vector3::from(acceleration);
+    }
+
+    ///Convenience function to add to the object's angular velocity
+    pub fn add_angularvelocity(&mut self, velocity: [f32; 3]) {
+        self.angular_velocity += Vector3::from(velocity);
+    }
+
+    ///Convenience function to add to the object's angular acceleration
+    pub fn add_angularacceleration(&mut self, acceleration: [f32; 3]) {
+        self.angular_acceleration += Vector3::from(acceleration);
+    }
+
+    ///Convenience function to set the object's translational position
+    pub fn set_translation(&mut self, position: [f32; 3]) {
+        self.position.translation = Translation3::new(position[0], position[1], position[2]);
+    }
+
+    ///Convenience function to set the object's rotation
+    pub fn set_rotation(&mut self, position: [f32; 3]) {
+        self.position.rotation = UnitQuaternion::new(Vector3::from(position));
+    }
+
+    /*Constructor Helper functions!*/
+    ///Creates a sphere with given radius, rotations and velocities
+    pub fn Sphere(
+        radius: f32,
+        color: [u8; 3],
+        position: [f32; 3],
+        rotation: [f32; 3],
+        velocity: [f32; 3],
+        angular_velocity: [f32; 3],
+        mass: f32,
+        bounciness: f32,
+        friction: f32,
+    ) -> Self {
+        let shape = Box::new(Sphere::new(radius));
+
+        let iso = Isometry3::new(Vector3::from(position), Vector3::from(rotation));
+        GameObject::new(
+            shape,
+            color,
+            iso,
+            velocity,
+            angular_velocity,
+            mass,
+            bounciness,
+            friction,
+        )
+    }
+
+    ///Creates a sphere with given radius, zero rotations and velocities
+    pub fn Sphere_default(
+        radius: f32,
+        color: [u8; 3],
+        position: [f32; 3],
+        mass: f32,
+        bounciness: f32,
+        friction: f32,
+    ) -> Self {
+        let shape = Box::new(Sphere::new(radius));
+
+        let iso = Isometry3::translation(position[0], position[1], position[2]);
+        GameObject::new(
+            shape,
+            color,
+            iso,
+            [0., 0., 0.],
+            [0., 0., 0.],
+            mass,
+            bounciness,
+            friction,
+        )
+    }
+
+    ///Creates a Plane with given normal, rotations and velocities
+    pub fn Plane(
+        normal: [f32; 3],
+        color: [u8; 3],
+        position: [f32; 3],
+        rotation: [f32; 3],
+        velocity: [f32; 3],
+        angular_velocity: [f32; 3],
+        mass: f32,
+        bounciness: f32,
+        friction: f32,
+    ) -> Self {
+        let shape = Box::new(Plane::new(UnitVector3::new_normalize(Vector3::from(
+            normal,
+        ))));
+
+        let iso = Isometry3::new(Vector3::from(position), Vector3::from(rotation));
+        GameObject::new(
+            shape,
+            color,
+            iso,
+            velocity,
+            angular_velocity,
+            mass,
+            bounciness,
+            friction,
+        )
+    }
+
+    ///Creates a plane with given normal, zero rotations and velocities
+    pub fn Plane_default(
+        normal: [f32; 3],
+        color: [u8; 3],
+        position: [f32; 3],
+        mass: f32,
+        bounciness: f32,
+        friction: f32,
+    ) -> Self {
+        let shape = Box::new(Plane::new(UnitVector3::new_normalize(Vector3::from(
+            normal,
+        ))));
+
+        let iso = Isometry3::translation(position[0], position[1], position[2]);
+        GameObject::new(
+            shape,
+            color,
+            iso,
+            [0., 0., 0.],
+            [0., 0., 0.],
+            mass,
+            bounciness,
+            friction,
+        )
+    }
+
+    ///Creates a Cube with given half extents, rotations and velocities
+    pub fn Cube(
+        half_extents: [f32; 3],
+        color: [u8; 3],
+        position: [f32; 3],
+        rotation: [f32; 3],
+        velocity: [f32; 3],
+        angular_velocity: [f32; 3],
+        mass: f32,
+        bounciness: f32,
+        friction: f32,
+    ) -> Self {
+        let shape = Box::new(Cube::new(Vector3::from(half_extents)));
+
+        let iso = Isometry3::new(Vector3::from(position), Vector3::from(rotation));
+        GameObject::new(
+            shape,
+            color,
+            iso,
+            velocity,
+            angular_velocity,
+            mass,
+            bounciness,
+            friction,
+        )
+    }
+
+    ///Creates a cube with given half extents, zero rotations and velocities
+    pub fn Cube_default(
+        half_extents: [f32; 3],
+        color: [u8; 3],
+        position: [f32; 3],
+        mass: f32,
+        bounciness: f32,
+        friction: f32,
+    ) -> Self {
+        let shape = Box::new(Cube::new(Vector3::from(half_extents)));
+
+        let iso = Isometry3::translation(position[0], position[1], position[2]);
+        GameObject::new(
+            shape,
+            color,
+            iso,
+            [0., 0., 0.],
+            [0., 0., 0.],
+            mass,
+            bounciness,
+            friction,
+        )
     }
 }
