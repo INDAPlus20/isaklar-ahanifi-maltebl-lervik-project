@@ -129,8 +129,7 @@ impl GameObject {
     pub fn integrate(&mut self, dt: f32) {
         // Update linear position
         //self.position.translation = self.position.translation.one() * Translation::from(DURATION * self.velocity);
-        self.position.translation =
-            Translation::from(self.position.translation.vector + dt * self.velocity);
+        self.position.translation.vector = self.position.translation.vector + dt * self.velocity;
 
         // I'm so confused over how these work, maybe this is completely wrong:
         self.position.rotation =
