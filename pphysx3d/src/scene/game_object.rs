@@ -1,11 +1,11 @@
 use kiss3d::nalgebra::{
-    Isometry3, Matrix3, Translation, Translation3, UnitQuaternion, UnitVector3, Vector3,
+    Isometry3, Matrix3, Point3, Translation, Translation3, UnitQuaternion, UnitVector3, Vector3,
 };
 
 use crate::shapes::{cube::Cube, plane::Plane, shape::Shape, sphere::Sphere};
 
 pub const INFINITY: f32 = f32::INFINITY;
-pub const DAMPING: f32 = 0.995;
+pub const DAMPING: f32 = 0.001;
 
 pub struct GameObject {
     shape: Box<dyn Shape>, // The collider
@@ -64,9 +64,13 @@ impl GameObject {
         }
     }
 
-    pub fn add_rotational_impulse(&mut self, contact_point: Vector3<f32>, impulse: Vector3<f32>) {
+    pub fn add_linear_impulse(&mut self, impulse: Vector3<f32>) {
+        self.velocity += impulse;
+    }
+
+    pub fn add_rotational_impulse(&mut self, contact_point: &Point3<f32>, impulse: &Vector3<f32>) {
         let center_of_mass = &self.position.translation;
-        let torque: Vector3<f32> = (contact_point - center_of_mass.vector).cross(&impulse);
+        let torque: Vector3<f32> = (contact_point.coords - center_of_mass.vector).cross(&impulse);
         let angular_acceleration = &self.inv_tensor() * torque;
         self.angular_velocity += angular_acceleration; // NOT SURE IF THIS IS NECESSARY
     }
@@ -142,8 +146,7 @@ impl GameObject {
     pub fn integrate(&mut self, dt: f32) {
         // Update linear position
         //self.position.translation = self.position.translation.one() * Translation::from(DURATION * self.velocity);
-        self.position.translation =
-            Translation::from(self.position.translation.vector + dt * self.velocity);
+        self.position.translation.vector = self.position.translation.vector + dt * self.velocity;
 
         // I'm so confused over how these work, maybe this is completely wrong:
         self.position.rotation =
@@ -154,8 +157,9 @@ impl GameObject {
         self.angular_acceleration += self.inv_tensor() * self.torque_accum;
 
         // Calculate new velocity
-        self.velocity = DAMPING * (self.velocity + dt * self.acceleration);
-        self.angular_velocity = DAMPING * (self.angular_velocity + dt * self.angular_acceleration);
+        self.velocity = (1. - DAMPING) * (self.velocity + dt * self.acceleration);
+        self.angular_velocity =
+            (1. - DAMPING) * (self.angular_velocity + dt * self.angular_acceleration);
 
         // (NOT SURE IF HAVE TO MAKE NEW ZERO VECTOR)
         self.clear_accum();
