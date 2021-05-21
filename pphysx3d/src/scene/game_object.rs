@@ -1,4 +1,4 @@
-use kiss3d::nalgebra::{Isometry3, Matrix3, Translation, UnitQuaternion, Vector3};
+use kiss3d::nalgebra::{Isometry3, Matrix3, Translation, Point3, UnitQuaternion, Vector3};
 
 use crate::shapes::shape::Shape;
 
@@ -61,9 +61,13 @@ impl GameObject {
         }
     }
 
-    pub fn add_rotational_impulse(&mut self, contact_point: Vector3<f32>, impulse: Vector3<f32>) {
+    pub fn add_linear_impulse(&mut self, impulse: Vector3<f32>) {
+        self.velocity += impulse;
+    }
+
+    pub fn add_rotational_impulse(&mut self, contact_point: &Point3<f32>, impulse: &Vector3<f32>) {
         let center_of_mass = &self.position.translation;
-        let torque: Vector3<f32> = (contact_point - center_of_mass.vector).cross(&impulse);
+        let torque: Vector3<f32> = (contact_point.coords - center_of_mass.vector).cross(&impulse);
         let angular_acceleration = &self.inv_tensor() * torque;
         self.angular_velocity += angular_acceleration; // NOT SURE IF THIS IS NECESSARY
     }
@@ -140,8 +144,8 @@ impl GameObject {
         self.angular_acceleration += self.inv_tensor() * self.torque_accum;
 
         // Calculate new velocity
-        self.velocity = (1. - DAMPING) * self.velocity + dt * self.acceleration;
-        self.angular_velocity = (1. - DAMPING) * self.angular_velocity + dt * self.angular_acceleration;
+        self.velocity = (1. - DAMPING) * (self.velocity + dt * self.acceleration);
+        self.angular_velocity = (1. - DAMPING) * (self.angular_velocity + dt * self.angular_acceleration);
 
         // (NOT SURE IF HAVE TO MAKE NEW ZERO VECTOR)
         self.clear_accum();
