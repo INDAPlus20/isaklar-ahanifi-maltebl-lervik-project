@@ -114,9 +114,10 @@ impl Kiss3dRenderer {
         } else if let Ok(plane) = shape.as_plane() {
             let mut g = self.window.add_group();
             let mut p = g.add_quad(PLANE_SIZE, PLANE_SIZE, 1, 1);
-            p.append_rotation(
-                &UnitQuaternion::rotation_between(&Vector3::z(), plane.normal()).unwrap(),
-            );
+            if let Some(rotation) = UnitQuaternion::rotation_between(&Vector3::z(), plane.normal())
+            {
+                p.append_rotation(&rotation);
+            }
             g
         } else {
             panic!()
