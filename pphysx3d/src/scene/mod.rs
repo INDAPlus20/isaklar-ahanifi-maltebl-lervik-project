@@ -125,9 +125,9 @@ impl PhysicsScene {
 
         // FRICTION:
         // Tangent vector for the collision
-        let tangent_vector = v_r - manifold_normal.scale(v_r.dot(manifold_normal));
+        let tangent_vector = (v_r - manifold_normal.scale(v_r.dot(manifold_normal))).normalize();
         // Magnitude of friction
-        let mut friction_magnitude = -(1. + e) * (v_r.dot(&tangent_vector))
+        let mut friction_magnitude = -(v_r.dot(&tangent_vector))
             / (invmass_1
                 + invmass_2
                 + manifold_normal.dot(&(inv_tensor_1 * (r_1.cross(&tangent_vector))).cross(r_1))

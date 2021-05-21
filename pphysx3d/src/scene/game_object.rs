@@ -3,7 +3,7 @@ use kiss3d::nalgebra::{Isometry3, Matrix3, Translation, UnitQuaternion, Vector3}
 use crate::shapes::shape::Shape;
 
 pub const INFINITY: f32 = f32::INFINITY;
-pub const DAMPING: f32 = 0.995;
+pub const DAMPING: f32 = 0.001;
 
 pub struct GameObject {
     shape: Box<dyn Shape>, // The collider
@@ -140,8 +140,8 @@ impl GameObject {
         self.angular_acceleration += self.inv_tensor() * self.torque_accum;
 
         // Calculate new velocity
-        self.velocity = DAMPING * (self.velocity + dt * self.acceleration);
-        self.angular_velocity = DAMPING * (self.angular_velocity + dt * self.angular_acceleration);
+        self.velocity = (1. - DAMPING) * self.velocity + dt * self.acceleration;
+        self.angular_velocity = (1. - DAMPING) * self.angular_velocity + dt * self.angular_acceleration;
 
         // (NOT SURE IF HAVE TO MAKE NEW ZERO VECTOR)
         self.clear_accum();
