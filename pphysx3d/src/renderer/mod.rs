@@ -1,7 +1,7 @@
 use kiss3d::{
     camera::{Camera, FirstPerson},
     event::Key,
-    nalgebra::{Point3, Translation3, UnitQuaternion, Vector3},
+    nalgebra::{Point3, UnitQuaternion, Vector3},
     scene::SceneNode,
     window::Window,
 };

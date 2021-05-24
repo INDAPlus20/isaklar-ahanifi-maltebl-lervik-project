@@ -1,8 +1,10 @@
-use super::*;
-use kiss3d::nalgebra::Translation3;
-use kiss3d::nalgebra::{Isometry3, Point3, Unit, UnitQuaternion, UnitVector3, Vector3};
+use kiss3d::nalgebra::{Point3, Translation3, UnitVector3, Vector3};
 
-use crate::shapes::{bounding_volume::BoundingVolume, sphere::Sphere};
+use crate::{
+    collision::CollisionManifold,
+    scene::{broad_phase, game_object::GameObject, narrow_phase, PhysicsScene},
+    shapes::{bounding_volume::BoundingVolume, sphere::Sphere},
+};
 
 #[test]
 fn update_position_test() {
@@ -31,9 +33,8 @@ fn update_position_test() {
 
 #[test]
 fn broad_phase_collision() {
-    let mut sphere1 = GameObject::Sphere_default(1., [100, 200, 0], [0.; 3], 10., 0.1, 0.2);
-    let mut sphere2 =
-        GameObject::Sphere_default(1., [100, 200, 0], [1.99, 1.99, 0.], 10., 0.1, 0.2);
+    let sphere1 = GameObject::Sphere_default(1., [100, 200, 0], [0.; 3], 10., 0.1, 0.2);
+    let sphere2 = GameObject::Sphere_default(1., [100, 200, 0], [1.99, 1.99, 0.], 10., 0.1, 0.2);
 
     let objects = vec![sphere1, sphere2];
     let collisions = broad_phase(&objects);

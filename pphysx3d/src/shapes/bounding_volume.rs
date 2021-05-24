@@ -1,5 +1,3 @@
-use core::f32;
-
 use kiss3d::nalgebra::{self as na, Point3, Vector3};
 
 pub trait BoundingVolume {

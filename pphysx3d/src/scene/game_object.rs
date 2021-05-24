@@ -1,5 +1,5 @@
 use kiss3d::nalgebra::{
-    Isometry3, Matrix3, Point3, Translation, Translation3, UnitQuaternion, UnitVector3, Vector3,
+    Isometry3, Matrix3, Point3, Translation3, UnitQuaternion, UnitVector3, Vector3,
 };
 
 use crate::shapes::{plane::Plane, shape::Shape, sphere::Sphere};

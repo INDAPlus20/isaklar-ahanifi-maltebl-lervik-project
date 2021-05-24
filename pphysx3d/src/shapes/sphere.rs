@@ -6,7 +6,7 @@ use super::{
 };
 use crate::shapes::bounding_volume::AABB;
 use core::f32;
-use kiss3d::nalgebra::{Isometry3, Point, Point3, UnitVector3, Vector3};
+use kiss3d::nalgebra::{Isometry3, Point3, UnitVector3, Vector3};
 
 #[derive(Debug, PartialEq)]
 pub struct Sphere {

@@ -1,8 +1,7 @@
 extern crate pphysx3d;
 use pphysx3d::{
-    renderer::{self, Kiss3dRenderer, Renderer},
+    renderer::{Kiss3dRenderer, Renderer},
     scene::{
-        self,
         game_object::{GameObject, INFINITY},
         PhysicsScene,
     },
