@@ -54,22 +54,24 @@ impl PhysicsScene {
                 for (_, contact) in manifold.contacts.iter().enumerate() {
                     let manifold_normal = &manifold.normal;
 
-                    let [(impulse1, friction1), (impulse2, friction2)] = self.calculate_impulse(
-                        index.0,
-                        index.1,
-                        manifold_normal,
-                        &contact.coords,
-                    );
+                    let [(impulse1, friction1), (impulse2, friction2)] =
+                        self.calculate_impulse(index.0, index.1, manifold_normal, &contact.coords);
 
                     // Possible bug: might need to check whether our tangent impulse aka friction is equal to zero, and change the formula for that case
 
                     // Change velocity of object_1:
-                    self.objects[index.0].add_linear_impulse(-(manifold.normal.scale(impulse1)+friction1) / contacts);
-                    self.objects[index.0].add_rotational_impulse(contact, &manifold.normal.scale(impulse1));
+                    self.objects[index.0].add_linear_impulse(
+                        -(manifold.normal.scale(impulse1) + friction1) / contacts,
+                    );
+                    self.objects[index.0]
+                        .add_rotational_impulse(contact, &manifold.normal.scale(-impulse1));
 
                     // Change velocity of object_2:
-                    self.objects[index.1].add_linear_impulse(manifold.normal.scale(impulse2)+friction2 / contacts);
-                    self.objects[index.1].add_rotational_impulse(contact, &manifold.normal.scale(impulse2));
+                    self.objects[index.1].add_linear_impulse(
+                        (manifold.normal.scale(impulse2) + friction2 / contacts),
+                    );
+                    self.objects[index.1]
+                        .add_rotational_impulse(contact, &manifold.normal.scale(impulse2));
                 }
             }
         }
@@ -89,10 +91,8 @@ impl PhysicsScene {
         let object_1 = &self.objects[index_1];
         let object_2 = &self.objects[index_2];
         // Relative position from center of mass to contact point for respective object
-        let r_1: &Vector3<f32> =
-        &(contact_point - object_1.position.translation.vector);
-        let r_2: &Vector3<f32> =
-        &(contact_point - object_2.position.translation.vector);
+        let r_1: &Vector3<f32> = &(contact_point - object_1.position.translation.vector);
+        let r_2: &Vector3<f32> = &(contact_point - object_2.position.translation.vector);
         // Mass for respective object
         let invmass_1 = object_1.inv_mass();
         let invmass_2 = object_2.inv_mass();
