@@ -6,7 +6,7 @@
 ### Examples
 ... can be found in  `/examples/` can be run using the standard `cargo run --example` to reveal 𝒾𝓂𝓅𝓇𝑒𝓈𝓈𝒾𝓋𝑒 results, such as from  `demo_many.rs` shown below (NOTE: Color is distorted in gif making process):
 
-![demo_many](balls.gif)
+![demo_many](Balls.gif)
 
 ## General use
 Examples of how to use the physics engine and the renderer are to be found under `/examples/` but are generally consists of:
