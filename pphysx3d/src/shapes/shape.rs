@@ -5,7 +5,7 @@ use super::{
     plane::Plane,
     sphere::Sphere,
 };
-
+///Main trait for all shapes
 pub trait Shape {
     fn compute_aabb(&self, pos: &Isometry3<f32>) -> AABB;
     fn compute_bounding_sphere(&self, pos: &Isometry3<f32>) -> BoundingSphere;

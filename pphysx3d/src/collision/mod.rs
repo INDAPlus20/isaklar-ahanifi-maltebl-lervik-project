@@ -90,6 +90,7 @@ impl CollisionManifold {
         return manifold;
     }
 
+    /// Calculates the collision manifold between a sphere and a plane
     pub fn sphere_plane(
         sphere: &Sphere,
         plane: &Plane,

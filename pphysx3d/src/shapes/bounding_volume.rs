@@ -4,7 +4,7 @@ pub trait BoundingVolume {
     fn interects(&self, other: &Self) -> bool;
     fn contains(&self, other: &Self) -> bool;
 }
-
+///Axis-Alligned Bounding box for collision checking
 pub struct AABB {
     //two points is all it takes to represent a box
     mins: Point3<f32>,
@@ -47,6 +47,7 @@ impl BoundingVolume for AABB {
     }
 }
 
+///Bounding sphere for collision checking
 pub struct BoundingSphere {
     center: Point3<f32>,
     radius: f32,

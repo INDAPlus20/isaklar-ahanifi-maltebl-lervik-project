@@ -6,7 +6,7 @@ use crate::shapes::{plane::Plane, shape::Shape, sphere::Sphere};
 
 pub const INFINITY: f32 = f32::INFINITY;
 pub const DAMPING: f32 = 0.001;
-
+///Physics enabled gameobjects to be put and handled by PhysicsScene
 pub struct GameObject {
     shape: Box<dyn Shape>, // The collider
     //texture:
@@ -28,6 +28,7 @@ pub struct GameObject {
 }
 
 impl GameObject {
+    ///Create a new GameObject using initialized Shape & nalgebra Isometry to represent rotation and position
     pub fn new(
         shape: Box<dyn Shape>,
         color: [u8; 3],
@@ -151,6 +152,7 @@ impl GameObject {
         self.clear_accum();
     }
 
+    ///The Objects colour
     pub fn color(&self) -> [u8; 3] {
         self.color
     }
