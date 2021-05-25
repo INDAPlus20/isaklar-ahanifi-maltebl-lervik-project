@@ -8,10 +8,15 @@ use pphysx3d::{
 };
 
 fn main() {
+    //Initialize renderer & scene
+
     let mut renderer = Kiss3dRenderer::new("Demo", 1200, 900);
     let mut scene = PhysicsScene::new();
 
+    //Create spheres in a cube formation using some default values
+    //The amount of spheres in a row in the formation
     let width = 4;
+    //The radii of the individual spheres
     let radius = 0.15;
 
     for x in 0..width {
@@ -29,13 +34,18 @@ fn main() {
                     1.,
                     0.02,
                 );
+
+                //Add some different velocities to the spheres
                 sphere.add_velocity([x as f32 - 11.5, y as f32 - 12.3, z as f32 - 11.2]);
+
+                //remember to add gameobject to scene and renderer at the same time to make sure they are synced.
                 renderer.add_obj(&sphere).unwrap();
                 scene.add(sphere);
             }
         }
     }
 
+    //Create planes using some default values, for walls and floor
     let plane_1 = GameObject::Plane_default(
         [0., 1., 0.],
         [255, 255, 255],
@@ -92,12 +102,16 @@ fn main() {
     renderer.add_obj(&plane_5).unwrap();
     scene.add(plane_5);
 
+    //Change the camera speed and position to work well with the scale of the Scene
     renderer.change_camera_speed(0.1);
-    renderer.set_background(0.5, 0.5, 0.5);
     renderer.camera_position([0., 10., 0.]);
-    loop {
-        scene.update(0.007);
+    renderer.set_background(0.5, 0.5, 0.5);
 
+    //Main loop
+    loop {
+        //Increment time and simulate physics
+        scene.update(0.007);
+        //Draw changes
         renderer.draw(&scene.objects()).unwrap();
     }
 }

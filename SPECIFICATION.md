@@ -13,34 +13,34 @@ We are going to try to make a 3D physics engine in 🦀 rust 🦀. Inspiration d
 
 ### Outline
 
-* Rendering (As a start using [Kiss3D](https://github.com/sebcrozet/kiss3d))
-    * Create baseline to show images
-    * Render frames continously 
-    * Simulate camera movement
-* Vector-math using [nalgebra](https://github.com/dimforge/nalgebra)
-* Define & render 3D objects
+* Rendering (As a start using [Kiss3D](https://github.com/sebcrozet/kiss3d)) ✅
+    * Render frames continously ✅
+    * Simulate camera movement  ✅
+* Vector-math using [nalgebra](https://github.com/dimforge/nalgebra) ✅
+* Define & render 3D objects    
     * Cubics
-    * Circles
+    * Spheres ✅
+    * Planes ✅
     * Composite shapes
     * Contains_point(x,y,z)
-* Basic movement
-    * Coordinate position
+* Basic movement    ✅
+    * Coordinate position   
     * Velocity
     * Acceleration
     * Friction
     * Gravity
     * Rotation
 * Geometric data
-    * Mass
-    * Center of mass
-    * Bounding volumes
-    * Contact 
+    * Mass  ✅
+    * Center of mass    ✅
+    * Bounding volumes  ✅
+    * Contact   ✅
     * Proximity (check intersection if moving according to vector )
     * Time of impact
 * Difficult movement
     * Inertia
     * Maximum velocity
-    * Friction
+    * Friction  ✅
 * Advanced factors
     * Lighting and shading
     * Some sort of fluid dynamics
@@ -58,7 +58,7 @@ We are going to try to make a 3D physics engine in 🦀 rust 🦀. Inspiration d
 * Performance?
 
 ### Enjoyment
-* Make lil'object go wooosh
+* Make lil'object go wooosh ✅
 
 ### Risks
 * Laggy af
@@ -67,3 +67,6 @@ We are going to try to make a 3D physics engine in 🦀 rust 🦀. Inspiration d
 * Project will branch very quickly once different types of geometric shapes are added.
 * Very research-heavy with lots of rabbit-holes
 * The implementation of the rendering is not very obvious.
+
+## UML-like architecture for depicting the basic flow of the program
+![very nice graphic](Architecture.svg)

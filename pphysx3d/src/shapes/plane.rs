@@ -7,7 +7,7 @@ use super::{
     shape::Shape,
     sphere::Sphere,
 };
-
+///The shape of a plane, defined by its normal
 pub struct Plane {
     normal: UnitVector3<f32>,
 }

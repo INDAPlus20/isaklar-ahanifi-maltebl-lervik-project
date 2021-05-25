@@ -10,8 +10,10 @@ use crate::{scene::game_object::GameObject, shapes::shape::Shape};
 
 mod tests;
 
+///The actual size of the planes used in Kiss3dRenderer as infinite planes are not possible without further setup
 pub const PLANE_SIZE: f32 = 10000.;
 
+///Trait representing the bare minimum capabilities required of a renderer for the PhysicsScene
 pub trait Renderer {
     fn draw(&mut self, gameobjects: &[GameObject]) -> Result<(), String>;
 

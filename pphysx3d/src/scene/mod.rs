@@ -9,12 +9,13 @@ mod tests;
 
 // For gravity!!!
 const g: f32 = 9.82;
-
+///The main physics scene containing physics enabled GameObjects
 pub struct PhysicsScene {
     objects: Vec<GameObject>,
 }
 
 impl PhysicsScene {
+    ///Create a new empty PhysicsScene
     pub fn new() -> PhysicsScene {
         PhysicsScene { objects: vec![] }
     }
@@ -80,6 +81,7 @@ impl PhysicsScene {
         self.update_positions(time_step);
     }
 
+    ///Resolves a collision between objects at the two indicies having specified manifold normal and contact point
     fn calculate_impulse(
         &self,
         index_1: usize,
