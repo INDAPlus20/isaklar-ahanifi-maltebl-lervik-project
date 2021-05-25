@@ -1,8 +1,8 @@
 use kiss3d::nalgebra::{
-    Isometry3, Matrix3, Point3, Translation, Translation3, UnitQuaternion, UnitVector3, Vector3,
+    Isometry3, Matrix3, Point3, Translation3, UnitQuaternion, UnitVector3, Vector3,
 };
 
-use crate::shapes::{cube::Cube, plane::Plane, shape::Shape, sphere::Sphere};
+use crate::shapes::{plane::Plane, shape::Shape, sphere::Sphere};
 
 pub const INFINITY: f32 = f32::INFINITY;
 pub const DAMPING: f32 = 0.001;
@@ -89,20 +89,6 @@ impl GameObject {
                 2.5 * inv_mass / (radius * radius),
                 2.5 * inv_mass / (radius * radius),
                 2.5 * inv_mass / (radius * radius),
-            );
-            inv_tensor.set_diagonal(&diagonal);
-        }
-
-        if let Ok(_cube) = &self.shape.as_cube() {
-            let half_extents = &self.shape.as_cube().unwrap().half_extents;
-            // HALF EXTENTS CAN'T BE 0
-            let diagonal: Vector3<f32> = Vector3::new(
-                12. * inv_mass
-                    / (half_extents.y * half_extents.y + half_extents.z * half_extents.z),
-                12. * inv_mass
-                    / (half_extents.x * half_extents.x + half_extents.z * half_extents.z),
-                12. * inv_mass
-                    / (half_extents.x * half_extents.x + half_extents.y * half_extents.y),
             );
             inv_tensor.set_diagonal(&diagonal);
         }
@@ -318,57 +304,6 @@ impl GameObject {
         let shape = Box::new(Plane::new(UnitVector3::new_normalize(Vector3::from(
             normal,
         ))));
-
-        let iso = Isometry3::translation(position[0], position[1], position[2]);
-        GameObject::new(
-            shape,
-            color,
-            iso,
-            [0., 0., 0.],
-            [0., 0., 0.],
-            mass,
-            bounciness,
-            friction,
-        )
-    }
-
-    ///Creates a Cube with given half extents, rotations and velocities
-    pub fn Cube(
-        half_extents: [f32; 3],
-        color: [u8; 3],
-        position: [f32; 3],
-        rotation: [f32; 3],
-        velocity: [f32; 3],
-        angular_velocity: [f32; 3],
-        mass: f32,
-        bounciness: f32,
-        friction: f32,
-    ) -> Self {
-        let shape = Box::new(Cube::new(Vector3::from(half_extents)));
-
-        let iso = Isometry3::new(Vector3::from(position), Vector3::from(rotation));
-        GameObject::new(
-            shape,
-            color,
-            iso,
-            velocity,
-            angular_velocity,
-            mass,
-            bounciness,
-            friction,
-        )
-    }
-
-    ///Creates a cube with given half extents, zero rotations and velocities
-    pub fn Cube_default(
-        half_extents: [f32; 3],
-        color: [u8; 3],
-        position: [f32; 3],
-        mass: f32,
-        bounciness: f32,
-        friction: f32,
-    ) -> Self {
-        let shape = Box::new(Cube::new(Vector3::from(half_extents)));
 
         let iso = Isometry3::translation(position[0], position[1], position[2]);
         GameObject::new(

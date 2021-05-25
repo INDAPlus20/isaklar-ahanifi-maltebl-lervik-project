@@ -1,6 +1,10 @@
-use super::*;
-use crate::shapes::sphere::Sphere;
-use kiss3d::nalgebra::{Point, Point3, Rotation3, Translation3, UnitQuaternion};
+use crate::{
+    collision::{sphere_plane, sphere_sphere, CollisionManifold},
+    shapes::{plane::Plane, sphere::Sphere},
+};
+use kiss3d::nalgebra::{
+    Isometry3, Point, Point3, Rotation3, Translation3, UnitQuaternion, UnitVector3, Vector3,
+};
 
 #[test]
 fn sphere_sphere_collision_check() {
@@ -79,14 +83,14 @@ fn sphere_plane_collision_check() {
 
 #[test]
 fn sphere_plane_manifold() {
-    let mut sphere = Sphere::new(2.1f32);
+    let sphere = Sphere::new(2.1f32);
     let iso_s = Isometry3::from_parts(
         Translation3::new(0f32, 1f32, 0f32),
         UnitQuaternion::new(Vector3::y() * std::f32::consts::FRAC_PI_2),
     );
 
     let plane = Plane::new(UnitVector3::new_normalize(Vector3::new(0.0, 1.0, 0.0)));
-    let mut iso_p = Isometry3::from_parts(
+    let iso_p = Isometry3::from_parts(
         Translation3::new(0f32, 0f32, 0f32),
         UnitQuaternion::new(Vector3::y() * std::f32::consts::TAU),
     );

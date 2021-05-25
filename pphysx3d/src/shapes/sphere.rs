@@ -1,13 +1,12 @@
 use super::{
     bounding_volume::BoundingSphere,
-    cube::Cube,
     ray::Ray,
     raycast::{RayCast, RayCastResult},
     shape::Shape,
 };
 use crate::shapes::bounding_volume::AABB;
 use core::f32;
-use kiss3d::nalgebra::{Isometry3, Point, Point3, UnitVector3, Vector3};
+use kiss3d::nalgebra::{Isometry3, Point3, UnitVector3, Vector3};
 
 #[derive(Debug, PartialEq)]
 pub struct Sphere {
@@ -43,10 +42,6 @@ impl Shape for Sphere {
 
     fn as_sphere(&self) -> Result<&Sphere, ()> {
         Ok(self)
-    }
-
-    fn as_cube(&self) -> Result<&Cube, ()> {
-        Err(())
     }
 
     fn as_plane(&self) -> Result<&super::plane::Plane, ()> {

@@ -1,7 +1,7 @@
 use kiss3d::{
     camera::{Camera, FirstPerson},
     event::Key,
-    nalgebra::{Point3, Translation3, UnitQuaternion, Vector3},
+    nalgebra::{Point3, UnitQuaternion, Vector3},
     scene::SceneNode,
     window::Window,
 };
@@ -108,9 +108,6 @@ impl Kiss3dRenderer {
     fn node_from_shape(&mut self, shape: &dyn Shape) -> SceneNode {
         if let Ok(sphere) = shape.as_sphere() {
             self.window.add_sphere(sphere.radius)
-        } else if let Ok(cube) = shape.as_cube() {
-            let extents = cube.half_extents * 2.0;
-            self.window.add_cube(extents.x, extents.y, extents.z)
         } else if let Ok(plane) = shape.as_plane() {
             let mut g = self.window.add_group();
             let mut p = g.add_quad(PLANE_SIZE, PLANE_SIZE, 1, 1);
@@ -120,9 +117,8 @@ impl Kiss3dRenderer {
             }
             g
         } else {
-            panic!()
+            panic!("ERROR:Trying to create GameObject from a shape not yet implemented in the renderer")
         }
-        //TODO: Add more shapes
     }
 }
 

@@ -183,9 +183,11 @@ pub fn narrow_phase(
     pairs: &Vec<(usize, usize)>,
 ) -> Vec<CollisionManifold> {
     let mut manifolds: Vec<CollisionManifold> = Vec::with_capacity(pairs.len());
+
     for (obj_1, obj_2) in pairs {
         let obj_1 = &objects[*obj_1];
         let obj_2 = &objects[*obj_2];
+
         if obj_1.velocity.x * obj_2.velocity.x > 0.0
             && obj_1.velocity.y * obj_2.velocity.y > 0.0
             && obj_1.velocity.z * obj_2.velocity.z > 0.0
@@ -193,10 +195,7 @@ pub fn narrow_phase(
             manifolds.push(CollisionManifold::new());
             continue;
         }
-        // if obj_1.velocity.dot(&obj_2.velocity) > 0.0 {
-        //     manifolds.push(CollisionManifold::new());
-        //     continue;
-        // }
+
         // pattern-match the specific collision
         if let (Ok(sph_1), Ok(sph_2)) = (obj_1.shape().as_sphere(), obj_2.shape().as_sphere()) {
             let manifold =
