@@ -45,7 +45,6 @@ impl PhysicsScene {
         // Resolve collisions & apply impulse + friction
         for (i, manifold) in manifolds.iter().enumerate() {
             if manifold.colliding {
-                //&self.objects[i].add_force(Vector3::new(0., 0., 0.)); // this would be how to add new forces but we don't do that right here
                 let index = &collision_pairs[i];
                 let contacts = manifold.contacts.len() as f32;
                 let inv_tensor_1 = self.objects[index.0].inv_tensor();
@@ -57,8 +56,6 @@ impl PhysicsScene {
 
                     let [(impulse1, friction1), (impulse2, friction2)] =
                         self.calculate_impulse(index.0, index.1, manifold_normal, &contact.coords);
-
-                    // Possible bug: might need to check whether our tangent impulse aka friction is equal to zero, and change the formula for that case
 
                     // Change velocity of object_1:
                     self.objects[index.0].add_linear_impulse(
@@ -77,18 +74,17 @@ impl PhysicsScene {
             }
         }
 
-        // update positions
+        // Update positions
         self.update_positions(time_step);
     }
 
-    ///Resolves a collision between objects at the two indicies having specified manifold normal and contact point
+    /// Resolves a collision between objects at the two indicies having specified manifold normal and contact point
     fn calculate_impulse(
         &self,
         index_1: usize,
         index_2: usize,
         manifold_normal: &Unit<Vector3<f32>>,
         contact_point: &Vector3<f32>,
-        //manifold: &CollisionManifold,
     ) -> [(f32 /* impulse */, Vector3<f32> /*friction */); 2] {
         let object_1 = &self.objects[index_1];
         let object_2 = &self.objects[index_2];
@@ -202,7 +198,6 @@ pub fn narrow_phase(
         if let (Ok(sph_1), Ok(sph_2)) = (obj_1.shape().as_sphere(), obj_2.shape().as_sphere()) {
             let manifold =
                 CollisionManifold::sphere_sphere(&sph_1, &sph_2, &obj_1.position, &obj_2.position);
-            //println!("manifold: {:?}", manifold);
             manifolds.push(manifold);
         } else if let (Ok(plane), Ok(sphere)) =
             (obj_1.shape().as_plane(), obj_2.shape().as_sphere())

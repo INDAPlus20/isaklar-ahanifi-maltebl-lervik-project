@@ -6,10 +6,10 @@ use crate::shapes::{plane::Plane, shape::Shape, sphere::Sphere};
 
 pub const INFINITY: f32 = f32::INFINITY;
 pub const DAMPING: f32 = 0.001;
-///Physics enabled gameobjects to be put and handled by PhysicsScene
+/// Physics enabled gameobjects to be put and handled by PhysicsScene
 pub struct GameObject {
     shape: Box<dyn Shape>, // The collider
-    //texture:
+    // Texture:
     color: [u8; 3], //RGB values for the object's default colour (overwritten if texture exists)
     inverse_mass: f32, // [1/kg]
     bounciness: f32, // elasticity aka coefficient of restitution
@@ -21,14 +21,13 @@ pub struct GameObject {
     force_accum: Vector3<f32>,    // Forces summed a la d'Alembert's principle [N]
     // Angular momentum stuff:
     // Orientation is stored in the unit quaternion of position
-    //pub orientation: Vector3<f32>, // Object's orientation in the room, angular equivalent to position
     pub angular_velocity: Vector3<f32>, // Angular velocity [rad/s]
     pub angular_acceleration: Vector3<f32>, // Angular acceleration [rad/s^2]
     pub torque_accum: Vector3<f32>,     // Torque summed, same principle as force_accum [Nm]
 }
 
 impl GameObject {
-    ///Create a new GameObject using initialized Shape & nalgebra Isometry to represent rotation and position
+    /// Create a new GameObject using initialized Shape & nalgebra Isometry to represent rotation and position
     pub fn new(
         shape: Box<dyn Shape>,
         color: [u8; 3],
@@ -97,32 +96,32 @@ impl GameObject {
         return inv_tensor;
     }
 
-    ///The Object's shape
+    /// The Object's shape
     pub fn shape(&self) -> &dyn Shape {
         self.shape.as_ref()
     }
 
-    ///All accumulated forces acting on the Object
+    /// All accumulated forces acting on the Object
     pub fn force_accum(&self) -> &Vector3<f32> {
         &self.force_accum
     }
 
-    ///Add a force acting on the object to it's force accumulator
+    /// Add a force acting on the object to it's force accumulator
     pub fn add_force(&mut self, force: Vector3<f32>) {
         self.force_accum = self.force_accum + force;
     }
 
-    ///All accumulated angular forces acting on the Object
+    /// All accumulated angular forces acting on the Object
     pub fn torque_accum(&self) -> &Vector3<f32> {
         &self.torque_accum
     }
 
-    ///Add an angular force acting on the object to it's torque accumulator
+    /// Add an angular force acting on the object to it's torque accumulator
     pub fn add_angular_force(&mut self, force: Vector3<f32>) {
         self.torque_accum = self.torque_accum + force;
     }
 
-    ///remove all accumulated forces acting on the Object
+    /// Remove all accumulated forces acting on the Object
     fn clear_accum(&mut self) {
         // maybe don't have to create a new Vector3 idk yet
         self.force_accum = Vector3::new(0., 0., 0.);
@@ -152,12 +151,12 @@ impl GameObject {
         self.clear_accum();
     }
 
-    ///The Objects colour
+    /// The Objects colour
     pub fn color(&self) -> [u8; 3] {
         self.color
     }
 
-    ///The mass of the Object (1/inverse_mass)
+    /// The mass of the Object (1/inverse_mass)
     pub fn mass(&self) -> f32 {
         if self.inverse_mass != 0. {
             return 1. / self.inverse_mass;
@@ -165,7 +164,7 @@ impl GameObject {
         return INFINITY;
     }
 
-    ///The inverse mass of the Object
+    /// The inverse mass of the Object
     pub fn inv_mass(&self) -> f32 {
         if self.inverse_mass != 0. {
             return 1. / self.inverse_mass;
@@ -173,48 +172,48 @@ impl GameObject {
         return 0.;
     }
 
-    ///The Object's coefficient of bounciness
+    /// The Object's coefficient of bounciness
     pub fn bounciness(&self) -> f32 {
         self.bounciness
     }
 
-    ///The Object's coefficient of friction
+    /// The Object's coefficient of friction
     pub fn friction(&self) -> f32 {
         self.friction
     }
 
-    ///Convenience function to add to the object's velocity
+    /// Convenience function to add to the object's velocity
     pub fn add_velocity(&mut self, velocity: [f32; 3]) {
         self.velocity += Vector3::from(velocity);
     }
 
-    ///Convenience function to add to the object's acceleration
+    /// Convenience function to add to the object's acceleration
     pub fn add_acceleration(&mut self, acceleration: [f32; 3]) {
         self.acceleration += Vector3::from(acceleration);
     }
 
-    ///Convenience function to add to the object's angular velocity
+    /// Convenience function to add to the object's angular velocity
     pub fn add_angularvelocity(&mut self, velocity: [f32; 3]) {
         self.angular_velocity += Vector3::from(velocity);
     }
 
-    ///Convenience function to add to the object's angular acceleration
+    /// Convenience function to add to the object's angular acceleration
     pub fn add_angularacceleration(&mut self, acceleration: [f32; 3]) {
         self.angular_acceleration += Vector3::from(acceleration);
     }
 
-    ///Convenience function to set the object's translational position
+    /// Convenience function to set the object's translational position
     pub fn set_translation(&mut self, position: [f32; 3]) {
         self.position.translation = Translation3::new(position[0], position[1], position[2]);
     }
 
-    ///Convenience function to set the object's rotation
+    /// Convenience function to set the object's rotation
     pub fn set_rotation(&mut self, position: [f32; 3]) {
         self.position.rotation = UnitQuaternion::new(Vector3::from(position));
     }
 
     /*Constructor Helper functions!*/
-    ///Creates a sphere with given radius, rotations and velocities
+    /// Creates a sphere with given radius, rotations and velocities
     pub fn Sphere(
         radius: f32,
         color: [u8; 3],
@@ -241,7 +240,7 @@ impl GameObject {
         )
     }
 
-    ///Creates a sphere with given radius, zero rotations and velocities
+    /// Creates a sphere with given radius, zero rotations and velocities
     pub fn Sphere_default(
         radius: f32,
         color: [u8; 3],
@@ -265,7 +264,7 @@ impl GameObject {
         )
     }
 
-    ///Creates a Plane with given normal, rotations and velocities
+    /// Creates a Plane with given normal, rotations and velocities
     pub fn Plane(
         normal: [f32; 3],
         color: [u8; 3],
@@ -294,7 +293,7 @@ impl GameObject {
         )
     }
 
-    ///Creates a plane with given normal, zero rotations and velocities
+    /// Creates a plane with given normal, zero rotations and velocities
     pub fn Plane_default(
         normal: [f32; 3],
         color: [u8; 3],
